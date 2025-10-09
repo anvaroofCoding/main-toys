@@ -49,17 +49,7 @@ export const api = createApi({
 		Categoriyes: builder.query({
 			query: () => `/shop/categories`,
 		}),
-		addQuantity: builder.mutation({
-			query: addQuant => ({
-				url: '/shop/create-cart-product/',
-				method: 'POST',
-				body: addQuant,
-			}),
-			invalidatesTags: [{ type: 'Posts', id: 'LIST' }],
-		}),
-		getCardProducts: builder.query({
-			query: () => `/shop/get-cart-products/`,
-		}),
+
 		getMe: builder.query({
 			query: () => `/users/profile/`,
 			providesTags: ['User'],
@@ -72,10 +62,40 @@ export const api = createApi({
 			}),
 			invalidatesTags: ['User'],
 		}),
+		getCardProducts: builder.query({
+			query: () => `/shop/get-cart-products/`,
+			providesTags: ['Posts', 'Post'],
+		}),
+		deleteQuantity: builder.mutation({
+			query: addQuant => ({
+				url: '/shop/delete-cart-products/',
+				method: 'POST',
+				body: addQuant,
+			}),
+			invalidatesTags: ['Posts', 'Post'],
+		}),
+		addQuantity: builder.mutation({
+			query: addQuant => ({
+				url: '/shop/create-cart-product/',
+				method: 'POST',
+				body: addQuant,
+			}),
+			invalidatesTags: ['Posts', 'Post'],
+		}),
+		SuccessOrder: builder.mutation({
+			query: addQuant => ({
+				url: '/shop/order-product/',
+				method: 'POST',
+				body: addQuant,
+			}),
+			invalidatesTags: ['Posts', 'Post'],
+		}),
 	}),
 })
 
 export const {
+	useSuccessOrderMutation,
+	useDeleteQuantityMutation,
 	useUpdateUserMutation,
 	useGetMeQuery,
 	useGetCardProductsQuery,

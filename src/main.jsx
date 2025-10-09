@@ -8,9 +8,10 @@ import { store } from './app/store'
 import Login from './auth/login'
 import './index.css'
 import Allp from './pages/Allp'
+import Checkout from './pages/checkout'
 import Home from './pages/home'
 import Order from './pages/order'
-import Profile from './pages/profile'
+import ProductDetails from './pages/product-details'
 
 createRoot(document.getElementById('root')).render(
 	<StrictMode>
@@ -22,7 +23,11 @@ createRoot(document.getElementById('root')).render(
 						<Route path='/barcha-maxsulotlar' element={<Allp />} />
 						<Route path='/buyurtmalar' element={<Order />} />
 						<Route path='/shaxsiy-kabinet' element={<Login />} />
-						<Route path='/maxsulotlar-kabinet' element={<Profile />} />
+						<Route
+							path='/buyurtmalar/product/:id'
+							element={<ProductDetails />}
+						/>
+						<Route path='/checkout' element={<Checkout />} />
 					</Route>
 				</Routes>
 			</BrowserRouter>

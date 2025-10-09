@@ -9,9 +9,11 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { toast, Toaster } from 'sonner'
 import {
 	useAddQuantityMutation,
 	useCategoriyesQuery,
+	useGetCardProductsQuery,
 	useProductsGetQuery,
 } from '../service/api'
 import NoData from './noData'
@@ -24,6 +26,7 @@ const ProductsPage = () => {
 	const [searchTerm, setSearchTerm] = useState('')
 	const [selectedCategory, setSelectedCategory] = useState('')
 	const navigate = useNavigate()
+	const [activeId, setActiveId] = useState(null)
 
 	const { data, isFetching, isLoading, error } = useProductsGetQuery({
 		page,
@@ -32,35 +35,43 @@ const ProductsPage = () => {
 	})
 	const { data: category, isLoading: catLoading } = useCategoriyesQuery()
 	const [addProducts, { isLoading: loads }] = useAddQuantityMutation()
+	const { data: getCardProd, isLoading: loadser } = useGetCardProductsQuery()
 
 	const handleAddToCart = async item => {
-		// backendga ketadigan ma'lumot
+		setActiveId(item.id)
 		const quantityData = {
 			product_id: item.id,
 			quantity: 1,
 			color: item.images[0].color,
 		}
-		console.log(quantityData)
-
+		const getCardFinded = getCardProd?.find(itemBox => {
+			return itemBox.quantity >= item.quantity
+		})
+		console.log(getCardFinded)
 		try {
-			// RTK Query orqali POST so‘rov
-			const response = await addProducts(quantityData).unwrap()
-			console.log('🟢 Savatga qo‘shildi:', response)
-			alert('Mahsulot savatga qo‘shildi!')
+			if (getCardFinded) {
+				toast.error(`Omborda ${item.quantity} dona qolgan!`)
+			} else {
+				const response = await addProducts(quantityData).unwrap()
+				console.log('🟢 Savatga qo‘shildi:', response)
+				toast.success('Mahsulot savatga qo‘shildi!')
+				setActiveId(null)
+			}
 		} catch (error) {
 			console.error('🔴 Xatolik:', error)
-			alert('Mahsulotni qo‘shishda xatolik yuz berdi!')
+			toast.error('Mahsulotni qo‘shishda xatolik yuz berdi!')
+			setActiveId(null)
 		}
 	}
 
-	if (isLoading || catLoading || loads)
+	if (isLoading || catLoading || loadser)
 		return (
 			<div className='flex justify-center items-center min-h-screen bg-gray-50'>
 				<div className='animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full'></div>
 			</div>
 		)
 
-	console.log(data)
+	console.log(getCardProd)
 	// 🔍 Qidiruvni faqat logda ko‘rsatamiz (keyin API bilan ulanadi)
 	const handleSearch = e => {
 		e.preventDefault()
@@ -77,10 +88,10 @@ const ProductsPage = () => {
 
 	return (
 		<div className='min-h-screen bg-gray-50 pb-24 pt-3'>
+			<Toaster position='top-center' richColors />
 			<h1 className='text-3xl font-semibold text-center text-gray-800 mb-5'>
 				Barcha mahsulotlar
 			</h1>
-
 			<form
 				onSubmit={handleSearch}
 				className='flex flex-col sm:flex-row justify-center items-center gap-3 px-4 mb-6'
@@ -129,7 +140,6 @@ const ProductsPage = () => {
 					))}
 				</select>
 			</form>
-
 			{/* 🧩 Product Grid */}
 			{error ? (
 				<div className='flex justify-center items-center h-full pt-10 bg-gray-50'>
@@ -152,7 +162,7 @@ const ProductsPage = () => {
 							>
 								{/* Image */}
 								<div
-									onClick={() => navigate(`/product/${product.id}`)}
+									onClick={() => navigate(`/buyurtmalar/product/${product.id}`)}
 									className='relative aspect-square w-full bg-gray-50 cursor-pointer'
 								>
 									<img
@@ -170,7 +180,9 @@ const ProductsPage = () => {
 								{/* Info */}
 								<div className='p-3 flex flex-col justify-between h-[150px]'>
 									<div
-										onClick={() => navigate(`/product/${product.id}`)}
+										onClick={() =>
+											navigate(`/buyurtmalar/product/${product.id}`)
+										}
 										className='cursor-pointer'
 									>
 										<h3
@@ -212,15 +224,21 @@ const ProductsPage = () => {
 										</div>
 
 										<button
-											disabled={isFetching}
+											disabled={
+												isFetching || (loads && activeId === product.id)
+											}
 											className={`flex items-center justify-center w-9 h-9 rounded-full transition ${
-												isFetching
+												loads && activeId === product.id
 													? 'bg-gray-300'
 													: 'bg-blue-500 hover:bg-blue-600 active:scale-95'
 											}`}
 											onClick={() => handleAddToCart(product)}
 										>
-											<ShoppingCart className='w-5 h-5 text-white' />
+											{loads && activeId === product.id ? (
+												<div className='animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full'></div>
+											) : (
+												<ShoppingCart className='w-5 h-5 text-white' />
+											)}
 										</button>
 									</div>
 								</div>

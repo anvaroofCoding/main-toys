@@ -18,13 +18,13 @@ const Profile = () => {
 	const [load, setLoad] = useState(false)
 	const { data, isLoading } = useGetMeQuery()
 	const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation()
-	const [isEditing, setIsEditing] = useState(false)
 	const [formData, setFormData] = useState({
 		first_name: '',
 		last_name: '',
 		phone_number: '',
 		address: '',
 	})
+	const [isEditing, setIsEditing] = useState(false)
 
 	const handleLogout = () => {
 		setLoad(true)

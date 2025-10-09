@@ -1,9 +1,11 @@
+import { useGetCardProductsQuery } from '@/service/api'
 import { motion } from 'framer-motion'
 import { House, ListOrdered, Search, ShoppingCart, User } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 
 const Navbar = () => {
 	const { pathname } = useLocation()
+	const { data, isLoading } = useGetCardProductsQuery()
 
 	const navItems = [
 		{ name: 'Bosh sahifa', icon: House, link: '/' },
@@ -13,7 +15,7 @@ const Navbar = () => {
 			name: 'Buyurtmalar',
 			icon: ShoppingCart,
 			link: '/buyurtmalar',
-			badge: 10,
+			badge: isLoading ? '' : data?.length,
 		},
 		{ name: 'Profil', icon: User, link: '/shaxsiy-kabinet' },
 	]
