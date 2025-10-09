@@ -8,6 +8,7 @@ import {
 	useDeleteQuantityMutation,
 	useGetCardProductsQuery,
 } from '@/service/api'
+import { Image } from 'antd'
 import {
 	Loader2,
 	Minus,
@@ -56,9 +57,11 @@ export default function Order() {
 							Hozircha hech narsa qo'shilmagan
 						</p>
 					</div>
-					<Button asChild className='mt-4 bg-blue-500 hover:bg-blue-600'>
-						<Link href='/'>Xarid qilishni boshlash</Link>
-					</Button>
+					<Link to='/' className='text-white'>
+						<Button className='mt-4 bg-blue-500 hover:bg-blue-600'>
+							Xaridni davom etish
+						</Button>
+					</Link>
 				</div>
 			</div>
 		)
@@ -190,23 +193,23 @@ export default function Order() {
 
 			{/* Main Content */}
 			<div className='mx-auto max-w-4xl px-4 py-6 sm:px-6'>
-				<div className='space-y-3'>
+				<div className='space-y-3 py-5'>
 					{data.map(item => (
 						<Card
 							key={item.id}
 							className='overflow-hidden transition-all hover:shadow-md'
 						>
-							<div className='flex gap-4 p-4 sm:flex-row sm:items-center sm:gap-6'>
+							<div className='flex gap-4 px-4 sm:flex-row sm:items-center sm:gap-6'>
 								{/* Checkbox & Image */}
-								<div className='flex items-start gap-4 sm:items-center'>
+								<div className='flex flex-col justify-between gap-5'>
 									<Checkbox
 										checked={selected.includes(item.product_id)}
 										onCheckedChange={() => toggleSelect(item.product_id)}
-										className='mt-1 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500 sm:mt-0'
+										className='mt-1 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500 sm:mt-0 w-7 h-7'
 									/>
 									<Link href={`/product/${item.product_id}`}>
-										<div className='relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border bg-muted sm:h-24 sm:w-24'>
-											<img
+										<div className='relative h-30 w-30 flex-shrink-0 overflow-hidden rounded-lg border bg-muted sm:h-24 sm:w-24'>
+											<Image
 												src={item.image || '/placeholder.svg'}
 												alt={item.name}
 												className='h-full w-full object-contain p-2'
