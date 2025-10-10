@@ -10,9 +10,11 @@ import {
 	useSuccessOrderMutation,
 	useUpdateUserMutation,
 } from '@/service/api'
+import { Image } from 'antd'
 import { CreditCard, Loader2, MapPin, ShoppingBag, User } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Toaster, toast } from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
 
 const Checkout = () => {
 	// 📦 RTK Query hooklar
@@ -20,6 +22,7 @@ const Checkout = () => {
 	const { data: cart = [], isLoading: cartLoading } = useGetCardProductsQuery()
 	const [updateUser] = useUpdateUserMutation()
 	const [createOrder, { isLoading: ordering }] = useSuccessOrderMutation()
+	const navigate = useNavigate()
 
 	// 🧍 Foydalanuvchi form holati
 	const [userData, setUserData] = useState({
@@ -76,8 +79,8 @@ const Checkout = () => {
 			}
 
 			const res = await createOrder(orderPayload).unwrap()
-			console.log('✅ Buyurtma yaratildi:', res)
-
+			navigate('/buyurtmalar')
+			window.location.reload()
 			// 3️⃣ To\'lov turi bo\'yicha natija
 			if (paymentMethod === 'karta' && res?.payment_link) {
 				window.location.href = res.payment_link
@@ -101,6 +104,7 @@ const Checkout = () => {
 			</div>
 		)
 
+	console.log(cart)
 	return (
 		<div className='min-h-screen pb-30 bg-gradient-to-b from-gray-50 to-white py-8 px-4 sm:px-6 lg:px-8'>
 			<Toaster
@@ -229,8 +233,14 @@ const Checkout = () => {
 										{cart.map((item, idx) => (
 											<div
 												key={idx}
-												className='flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50/50 p-4 transition-colors hover:bg-gray-50'
+												className='flex items-center justify-between gap-5 rounded-lg border border-gray-100 bg-gray-50/50 p-4 transition-colors hover:bg-gray-50'
 											>
+												<Image
+													src={item.image}
+													alt={item.name}
+													width={50}
+													className='rounded-md'
+												/>
 												<div className='flex-1'>
 													<p className='font-medium text-gray-900'>
 														{item.name}
@@ -295,7 +305,7 @@ const Checkout = () => {
 										<div>
 											<p className='font-medium text-gray-900'>Naqd pul</p>
 											<p className='text-xs text-muted-foreground'>
-												Yetkazib berishda to\'lash
+												Yetkazib berishda to'lash
 											</p>
 										</div>
 									</div>

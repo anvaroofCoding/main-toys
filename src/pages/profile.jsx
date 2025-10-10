@@ -72,7 +72,7 @@ const Profile = () => {
 	}
 
 	return (
-		<div className='w-full min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 flex items-center justify-center pb-20 px-3'>
+		<div className='w-full min-h-screen flex items-center justify-center pb-18 overflow-hidden'>
 			<Toaster position='top-center' />
 
 			<div className='w-full max-w-lg bg-white/80 backdrop-blur-xl rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] overflow-hidden border border-blue-100 transition-all'>
@@ -189,11 +189,11 @@ const Profile = () => {
 									Bosh sahifa
 								</a>
 								<a
-									href='/barcha-maxsulotlar'
+									href='/my-order'
 									className='flex items-center gap-3 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2.5 rounded-xl text-sm font-medium border transition-all'
 								>
 									<Package size={16} />
-									Barcha mahsulotlar
+									Mening buyurtmalarim
 								</a>
 							</div>
 						</>

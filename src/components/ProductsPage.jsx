@@ -45,12 +45,15 @@ const ProductsPage = () => {
 			color: item.images[0].color,
 		}
 		const getCardFinded = getCardProd?.find(itemBox => {
-			return itemBox.quantity >= item.quantity
+			return (
+				itemBox.product_id == item.id &&
+				itemBox.quantity >= item.images[0].quantity
+			)
 		})
 		console.log(getCardFinded)
 		try {
 			if (getCardFinded) {
-				toast.error(`Omborda ${item.quantity} dona qolgan!`)
+				toast.error(`Omborda ${item.images[0].quantity} dona qolgan!`)
 			} else {
 				const response = await addProducts(quantityData).unwrap()
 				console.log('🟢 Savatga qo‘shildi:', response)
@@ -71,9 +74,9 @@ const ProductsPage = () => {
 			</div>
 		)
 
-	console.log(getCardProd)
 	// 🔍 Qidiruvni faqat logda ko‘rsatamiz (keyin API bilan ulanadi)
 	const handleSearch = e => {
+		setSelectedCategory('')
 		e.preventDefault()
 		console.log('Search term:', searchTerm)
 		console.log('Selected category:', selectedCategory)
@@ -86,6 +89,7 @@ const ProductsPage = () => {
 		setTimeout(() => setIsPageLoading(false), 500)
 	}
 
+	console.log(data)
 	return (
 		<div className='min-h-screen bg-gray-50 pb-24 pt-3'>
 			<Toaster position='top-center' richColors />
@@ -104,7 +108,10 @@ const ProductsPage = () => {
 						type='text'
 						placeholder='Qidiruv...'
 						value={searchTerm}
-						onChange={e => setSearchTerm(e.target.value)}
+						onChange={e => {
+							setSearchTerm(e.target.value)
+							if (e.target.value.trim() !== '') setSelectedCategory('')
+						}}
 						className='pl-10 pr-[90px] py-2.5 w-full rounded-2xl bg-white border border-gray-200 shadow-sm
 			focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
 			placeholder:text-gray-400 text-gray-700 transition-all duration-200'
@@ -127,7 +134,10 @@ const ProductsPage = () => {
 				{/* 🧭 Category Select */}
 				<select
 					value={selectedCategory}
-					onChange={e => setSelectedCategory(e.target.value)}
+					onChange={e => {
+						setSelectedCategory(e.target.value)
+						if (e.target.value !== '') setSearchTerm('')
+					}}
 					className='w-full sm:w-[220px] py-2.5 px-4 rounded-2xl bg-white border border-gray-200 shadow-sm
 		text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
 		appearance-none cursor-pointer transition-all duration-200'

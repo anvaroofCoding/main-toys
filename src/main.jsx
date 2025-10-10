@@ -10,6 +10,7 @@ import './index.css'
 import Allp from './pages/Allp'
 import Checkout from './pages/checkout'
 import Home from './pages/home'
+import MyOrder from './pages/my_order'
 import Order from './pages/order'
 import ProductDetails from './pages/product-details'
 
@@ -28,6 +29,7 @@ createRoot(document.getElementById('root')).render(
 							element={<ProductDetails />}
 						/>
 						<Route path='/checkout' element={<Checkout />} />
+						<Route path='/my-order' element={<MyOrder />} />
 					</Route>
 				</Routes>
 			</BrowserRouter>

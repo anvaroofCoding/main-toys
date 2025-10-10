@@ -67,6 +67,8 @@ export default function Order() {
 		)
 	}
 
+	console.log(data)
+
 	// Qo'shish
 	const handleIncrease = async item => {
 		setLoadingId(item.id)

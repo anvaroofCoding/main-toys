@@ -1,17 +1,44 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
+// Asosiy baseQuery
+const baseQuery = fetchBaseQuery({
+	baseUrl: 'https://api.toysmars.uz',
+	prepareHeaders: headers => {
+		const token = localStorage.getItem('access_token')
+		if (token) {
+			headers.set('Authorization', `Bearer ${token}`)
+		}
+		return headers
+	},
+})
+
+// 🔥 Faqat mutation (POST/PUT/DELETE) bo‘lganda 401 xatosini ushlovchi wrapper
+const baseQueryWithAuth = async (args, api, extraOptions) => {
+	const result = await baseQuery(args, api, extraOptions)
+
+	// args.method tekshiruv (faqat mutationlar uchun)
+	const method =
+		typeof args === 'string' ? 'GET' : args?.method?.toUpperCase() || 'GET'
+
+	// faqat mutation (POST, PUT, DELETE) va 401 bo‘lsa ishlaydi
+	if (
+		['POST', 'PUT', 'DELETE'].includes(method) &&
+		result?.error?.status === 401
+	) {
+		localStorage.removeItem('access_token')
+		alert(
+			'Buyurtma berish uchun telefon raqamingiz orqali shaxsiy kabinetga kirib oling!'
+		)
+		window.location.href = '/shaxsiy-kabinet'
+	}
+
+	return result
+}
+
+// API yaratish
 export const api = createApi({
 	reducerPath: 'api',
-	baseQuery: fetchBaseQuery({
-		baseUrl: 'https://api.toysmars.uz',
-		prepareHeaders: headers => {
-			const token = localStorage.getItem('access_token')
-			if (token) {
-				headers.set('Authorization', `Bearer ${token}`)
-			}
-			return headers
-		},
-	}),
+	baseQuery: baseQueryWithAuth,
 	tagTypes: ['Posts', 'Post'],
 	endpoints: builder => ({
 		NewProductsGet: builder.query({
@@ -49,7 +76,6 @@ export const api = createApi({
 		Categoriyes: builder.query({
 			query: () => `/shop/categories`,
 		}),
-
 		getMe: builder.query({
 			query: () => `/users/profile/`,
 			providesTags: ['User'],
@@ -57,7 +83,7 @@ export const api = createApi({
 		updateUser: builder.mutation({
 			query: updatedData => ({
 				url: `/users/update/`,
-				method: 'PUT', // yoki PUT bo‘lishi mumkin, agar API talab qilsa
+				method: 'PUT',
 				body: updatedData,
 			}),
 			invalidatesTags: ['User'],
@@ -90,10 +116,15 @@ export const api = createApi({
 			}),
 			invalidatesTags: ['Posts', 'Post'],
 		}),
+		MyOrder: builder.query({
+			query: () => `/shop/order-history/`,
+			providesTags: ['Posts', 'Post'],
+		}),
 	}),
 })
 
 export const {
+	useMyOrderQuery,
 	useSuccessOrderMutation,
 	useDeleteQuantityMutation,
 	useUpdateUserMutation,

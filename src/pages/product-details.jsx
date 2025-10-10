@@ -51,8 +51,16 @@ export default function ProductDetails() {
 	}
 
 	const handleDecrease = () => setCount(prev => Math.max(1, prev - 1))
-	const handleIncrease = () =>
-		setCount(prev => Math.min(product?.quantity ?? 9999, prev + 1))
+	const handleIncrease = () => {
+		const selectedImg = product.images?.find(i => i.color === selectedColor)
+		const maxQuantity = selectedImg?.quantity || 9999
+
+		setCount(prev => {
+			if (prev < maxQuantity) return prev + 1
+			toast.warning('Bu rangdagi mahsulot soni tugagan!')
+			return prev
+		})
+	}
 
 	const handleAddToCart = async () => {
 		if (!product) return
@@ -324,7 +332,7 @@ export default function ProductDetails() {
 							<div className='flex items-center justify-center rounded-xl border-2 border-border overflow-hidden bg-muted/30'>
 								<Button
 									onClick={handleDecrease}
-									disabled={count <= 1}
+									// disabled={count <= 1}
 									variant='ghost'
 									size='icon'
 									className='h-10 w-10 rounded-none hover:bg-blue-500/10 hover:text-blue-500 disabled:opacity-30'
@@ -338,7 +346,7 @@ export default function ProductDetails() {
 
 								<Button
 									onClick={handleIncrease}
-									disabled={count >= product.quantity}
+									// disabled={count >= product.quantity}
 									variant='ghost'
 									size='icon'
 									className='h-14 w-14 rounded-none hover:bg-blue-500/10 hover:text-blue-500 disabled:opacity-30'
