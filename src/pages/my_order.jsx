@@ -21,7 +21,7 @@ const MyOrder = () => {
 
 	if (isLoading) {
 		return (
-			<div className='flex flex-col items-center gap-3'>
+			<div className='flex flex-col justify-center w-full h-screen items-center gap-3'>
 				<Loader2 className='h-8 w-8 animate-spin text-blue-500' />
 				<p className='text-sm text-muted-foreground'>Yuklanmoqda...</p>
 			</div>

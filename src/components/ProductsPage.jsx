@@ -67,7 +67,7 @@ const ProductsPage = () => {
 
 	if (isLoading || catLoading || loadser)
 		return (
-			<div className='flex w-full h-screen flex-col items-center gap-3 '>
+			<div className='flex w-full h-screen justify-center flex-col items-center gap-3'>
 				<Loader2 className='h-8 w-8 animate-spin text-blue-500' />
 				<p className='text-sm text-muted-foreground'>Yuklanmoqda...</p>
 			</div>
