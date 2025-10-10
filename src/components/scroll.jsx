@@ -1,49 +1,138 @@
-import { motion } from 'framer-motion'
+import styled from 'styled-components'
 
-const ToyCarousel = () => {
-	const images = [
-		'/public/toys/1.png',
-		'/public/toys/2.png',
-		'/public/toys/3.png',
-		'/public/toys/4.png',
-		'/public/toys/5.png',
-		'/public/toys/6.webp',
-		'/public/toys/7.jpg',
-		'/public/toys/8.webp',
-	]
-
+const Card = () => {
 	return (
-		<div className='overflow-hidden relative w-full'>
-			<h2 className='text-3xl font-bold text-center pb-5'>
-				🎠 O‘yinchoqlar dunyosi
-			</h2>
-
-			<motion.div
-				className='flex gap-6'
-				animate={{ x: ['0%', '-100%'] }}
-				transition={{
-					repeat: Infinity,
-					repeatType: 'loop',
-					duration: 30, // aylanish tezligi (katta bo‘lsa — sekin)
-					ease: 'linear',
-				}}
-			>
-				{/* 2 marta map qilamiz — infinite effect uchun */}
-				{[...images, ...images].map((src, i) => (
-					<div
-						key={i}
-						className='min-w-[250px] h-[180px] rounded-2xl overflow-hidden shadow-md border border-blue-100 hover:scale-105 transition-transform duration-300 bg-white'
-					>
-						<img
-							src={src}
-							alt={`toy-${i}`}
-							className='w-full h-full object-cover'
-						/>
+		<StyledWrapper>
+			<div className='marquee'>
+				<div className='marquee__inner'>
+					<div className='marquee__group'>
+						<span>
+							<img
+								src='https://png.pngtree.com/png-vector/20230808/ourmid/pngtree-table-toy-vector-png-image_6894285.png'
+								alt='toy'
+								className='w-20'
+							/>
+						</span>
+						<span>
+							<img
+								src='https://png.pngtree.com/png-vector/20230928/ourmid/pngtree-cute-bear-teddy-toy-png-image_10149481.png'
+								alt='toy'
+								className='w-20'
+							/>
+						</span>
+						<span>
+							<img
+								src='https://file.aiquickdraw.com/imgcompressed/img/compressed_110cc86a7b0aac01ef255718bcbb6b4c.webp'
+								alt='toy'
+								className='w-20'
+							/>
+						</span>
+						<span>
+							<img
+								src='https://www.pngmart.com/files/12/Sheriff-Woody-Toy-Story-Transparent-Background.png'
+								alt='toy'
+								className='w-20'
+							/>
+						</span>
+						<span>
+							<img
+								src='https://gallery.yopriceville.com/downloadfullsize/send/8468'
+								alt='toy'
+								className='w-20'
+							/>
+						</span>
+						<span>
+							<img
+								src='https://file.aiquickdraw.com/imgcompressed/img/compressed_870b9fb36c4199c3cbe286fe9ff42978.webp'
+								alt='toy'
+								className='w-20'
+							/>
+						</span>
+						<span>
+							<img
+								src='https://popweasel.co.nz/cdn/shop/files/JAD98033--Cars-Cruising-Lightning-McQueen-124-Diecast-Vehicle-01_600x600_crop_center.png?v=1716356495'
+								alt='toy'
+								className='w-20'
+							/>
+						</span>
+						<span>
+							<img
+								src='https://robotco.ru/wp-content/uploads/2020/07/perspective_T_front.png'
+								alt='toy'
+								className='w-20'
+							/>
+						</span>
+						<span>
+							<img
+								src='https://robotco.ru/wp-content/uploads/2020/07/perspective_T_front.png'
+								alt='toy'
+								className='w-20'
+							/>
+						</span>
 					</div>
-				))}
-			</motion.div>
-		</div>
+				</div>
+			</div>
+		</StyledWrapper>
 	)
 }
 
-export default ToyCarousel
+const StyledWrapper = styled.div`
+	.marquee {
+		overflow: hidden;
+		width: 100%;
+		-webkit-mask-image: linear-gradient(
+			to right,
+			transparent 0%,
+			black 10%,
+			black 90%,
+			transparent 100%
+		);
+		mask-image: linear-gradient(
+			to right,
+			transparent 0%,
+			black 10%,
+			black 90%,
+			transparent 100%
+		);
+	}
+
+	.marquee__inner {
+		display: flex;
+		width: max-content;
+		animation: marquee 20s linear infinite;
+	}
+
+	.marquee__group {
+		display: flex;
+		align-items: center;
+	}
+
+	.marquee__group span {
+		margin: 0 0.5rem; /* avvalgidan 3x kichik */
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.marquee__group img {
+		width: 90px;
+		height: 90px;
+		object-fit: contain;
+		transition: transform 0.3s ease;
+	}
+
+	.marquee__group img:hover {
+		transform: scale(1.1);
+	}
+
+	@keyframes marquee {
+		0% {
+			transform: translateX(0);
+		}
+		100% {
+			transform: translateX(-50%);
+		}
+	}
+`
+
+export default Card
