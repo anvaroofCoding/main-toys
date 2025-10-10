@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { useAddQuantityMutation, useProductsDetailQuery } from '@/service/api'
-import { ArrowLeft, Minus, Plus, ShoppingCart } from 'lucide-react'
+import { ArrowLeft, Loader2, Minus, Plus, ShoppingCart } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { toast, Toaster } from 'sonner'
@@ -79,8 +79,11 @@ export default function ProductDetails() {
 
 	if (isLoading || isFetching)
 		return (
-			<div className='flex justify-center items-center min-h-screen bg-background'>
-				<div className='animate-spin w-10 h-10 border-3 border-blue-500 border-t-transparent rounded-full'></div>
+			<div className='flex min-h-screen items-center justify-center bg-background'>
+				<div className='flex flex-col items-center gap-3'>
+					<Loader2 className='h-8 w-8 animate-spin text-blue-500' />
+					<p className='text-sm text-muted-foreground'>Yuklanmoqda...</p>
+				</div>
 			</div>
 		)
 

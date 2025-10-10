@@ -21,8 +21,9 @@ const MyOrder = () => {
 
 	if (isLoading) {
 		return (
-			<div className='flex justify-center items-center min-h-screen'>
-				<Loader2 className='h-10 w-10 text-blue-500 animate-spin' />
+			<div className='flex flex-col items-center gap-3'>
+				<Loader2 className='h-8 w-8 animate-spin text-blue-500' />
+				<p className='text-sm text-muted-foreground'>Yuklanmoqda...</p>
 			</div>
 		)
 	}
@@ -127,8 +128,8 @@ const MyOrder = () => {
 								className='border border-border shadow-sm hover:shadow-md transition-shadow duration-200'
 							>
 								<CardHeader className='pb-4'>
-									<div className='flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3'>
-										<div className='space-y-1'>
+									<div className='flex flex-col sm:items-start sm:justify-between gap-3'>
+										<div className='space-y-1 w-full'>
 											<div className='flex items-center w-full justify-between'>
 												<h3 className='text-lg font-semibold tracking-tight'>
 													Buyurtma №{order.order_id || index + 1}
@@ -146,7 +147,7 @@ const MyOrder = () => {
 												</p>
 											</div>
 										</div>
-										<div className=' w-full flex items-center justify-between'>
+										<div className='w-full flex flex-col lg:flex-row items-start gap-5 justify-between'>
 											<Badge
 												variant={statusConfig.variant}
 												className={`${statusConfig.className} flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium`}

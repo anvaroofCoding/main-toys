@@ -3,6 +3,7 @@ import {
 	Edit3,
 	Hash,
 	Home,
+	Loader2,
 	LogOut,
 	MapPin,
 	Package,
@@ -65,8 +66,11 @@ const Profile = () => {
 
 	if (load || isLoading) {
 		return (
-			<div className='flex justify-center items-center min-h-screen bg-gray-50'>
-				<div className='animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full'></div>
+			<div className='flex min-h-screen items-center justify-center bg-background'>
+				<div className='flex flex-col items-center gap-3'>
+					<Loader2 className='h-8 w-8 animate-spin text-blue-500' />
+					<p className='text-sm text-muted-foreground'>Yuklanmoqda...</p>
+				</div>
 			</div>
 		)
 	}

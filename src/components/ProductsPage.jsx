@@ -18,8 +18,6 @@ import {
 } from '../service/api'
 import NoData from './noData'
 
-// ✅ Shadcn / Acentery UI elementlari
-
 const ProductsPage = () => {
 	const [page, setPage] = useState(1)
 	const [isPageLoading, setIsPageLoading] = useState(false)
@@ -69,8 +67,9 @@ const ProductsPage = () => {
 
 	if (isLoading || catLoading || loadser)
 		return (
-			<div className='flex justify-center items-center min-h-screen bg-gray-50'>
-				<div className='animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full'></div>
+			<div className='flex w-full h-screen flex-col items-center gap-3 '>
+				<Loader2 className='h-8 w-8 animate-spin text-blue-500' />
+				<p className='text-sm text-muted-foreground'>Yuklanmoqda...</p>
 			</div>
 		)
 
@@ -82,14 +81,12 @@ const ProductsPage = () => {
 		console.log('Selected category:', selectedCategory)
 	}
 
-	console.log(selectedCategory)
 	const handlePageChange = newPage => {
 		setIsPageLoading(true)
 		setPage(newPage)
 		setTimeout(() => setIsPageLoading(false), 500)
 	}
 
-	console.log(data)
 	return (
 		<div className='min-h-screen bg-gray-50 pb-24 pt-3'>
 			<Toaster position='top-center' richColors />
