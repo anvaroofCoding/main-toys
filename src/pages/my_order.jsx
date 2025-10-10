@@ -13,6 +13,7 @@ import {
 	Package,
 	XCircle,
 } from 'lucide-react'
+import { toast, Toaster } from 'sonner'
 
 const MyOrder = () => {
 	const { data = [], isLoading } = useMyOrderQuery()
@@ -29,10 +30,14 @@ const MyOrder = () => {
 	const handClick = async clickID => {
 		const order_ids = { order_id: clickID }
 		const res = await ClickLink(order_ids).unwrap()
-		// if (res?.payment_link) {
-		// 	window.location.href = res.payment_link
-		// }
-		console.log(res)
+	}
+
+	const handPayment = linksP => {
+		if (linksP) {
+			window.location.href = linksP
+		} else {
+			toast.error("Afsuski click orqali to'lov amalga oshmadi")
+		}
 	}
 
 	console.log(data)
@@ -78,7 +83,7 @@ const MyOrder = () => {
 					label: 'Kutilmoqda',
 					variant: 'secondary',
 					icon: Clock,
-					className: 'bg-yellow-400 text-white',
+					className: 'bg-yellow-500 text-white',
 				}
 			case 'cancelled':
 				return {
@@ -100,6 +105,7 @@ const MyOrder = () => {
 
 	return (
 		<div className='min-h-screen bg-background pb-20'>
+			<Toaster position='top-center' richColors />
 			<div className='max-w-4xl mx-auto px-4 py-8 md:py-12 lg:py-16'>
 				<div className='mb-8 md:mb-12'>
 					<h1 className='text-3xl md:text-4xl font-semibold tracking-tight text-balance mb-2'>
@@ -155,7 +161,7 @@ const MyOrder = () => {
 											) : (
 												<div className='text-white'>
 													<Button
-														onClick={() => handClick(order.order_id)}
+														onClick={() => handPayment(order.payment_link)}
 														className='flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white transition-all duration-200 shadow-md px-4 py-2 rounded-xl'
 													>
 														<CreditCard className='w-4 h-4' />

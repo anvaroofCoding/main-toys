@@ -83,9 +83,10 @@ const Checkout = () => {
 			window.location.reload()
 			// 3️⃣ To\'lov turi bo\'yicha natija
 			if (paymentMethod === 'karta' && res?.payment_link) {
+				window.location.reload()
 				window.location.href = res.payment_link
 			} else {
-				toast.success('Buyurtma muvaffaqiyatli yaratildi ✅')
+				toast.success('Buyurtma muvaffaqiyatli yaratildi')
 			}
 		} catch (err) {
 			console.error('❌ Xatolik:', err)
