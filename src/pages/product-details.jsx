@@ -99,6 +99,7 @@ export default function ProductDetails() {
 
 	const avgRating = Number.parseFloat(product.average_rating || '0')
 
+	console.log(product)
 	return (
 		<div className='min-h-screen bg-background pb-20'>
 			<Toaster position='top-center' richColors />

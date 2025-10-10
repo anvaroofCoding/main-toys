@@ -19,6 +19,7 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { toast, Toaster } from 'sonner'
 
 export default function Order() {
 	const { data = [], isLoading, refetch } = useGetCardProductsQuery()
@@ -73,12 +74,16 @@ export default function Order() {
 	const handleIncrease = async item => {
 		setLoadingId(item.id)
 		try {
-			await addQuantity({
-				product_id: item.product_id,
-				color: item.color,
-				quantity: 1,
-			}).unwrap()
-			refetch()
+			if (item.quantity == item.sklad_quantity) {
+				toast.warning(`Omborda ${item.sklad_quantity} dona qolgan`)
+			} else {
+				await addQuantity({
+					product_id: item.product_id,
+					color: item.color,
+					quantity: 1,
+				}).unwrap()
+				refetch()
+			}
 		} catch (err) {
 			console.error('Oshirishda xatolik:', err)
 		} finally {
@@ -167,6 +172,7 @@ export default function Order() {
 
 	return (
 		<div className='min-h-screen bg-background pb-10'>
+			<Toaster position='top-center' richColors />
 			{/* Header */}
 			<div className='sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
 				<div className='mx-auto max-w-4xl px-4 py-4 sm:px-6'>
@@ -192,7 +198,6 @@ export default function Order() {
 					</div>
 				</div>
 			</div>
-
 			{/* Main Content */}
 			<div className='mx-auto max-w-4xl px-4 py-6 sm:px-6'>
 				<div className='space-y-3 py-5'>

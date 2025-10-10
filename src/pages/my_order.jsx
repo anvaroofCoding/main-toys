@@ -1,7 +1,8 @@
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import { useMyOrderQuery } from '@/service/api'
+import { useClickLinkMutation, useMyOrderQuery } from '@/service/api'
 import { Image } from 'antd'
 import {
 	CheckCircle2,
@@ -14,6 +15,7 @@ import {
 
 const MyOrder = () => {
 	const { data = [], isLoading } = useMyOrderQuery()
+	const [ClickLink, { isLoading: loads }] = useClickLinkMutation()
 
 	if (isLoading) {
 		return (
@@ -21,6 +23,15 @@ const MyOrder = () => {
 				<Loader2 className='h-10 w-10 text-blue-500 animate-spin' />
 			</div>
 		)
+	}
+
+	const handClick = async clickID => {
+		const order_ids = { order_id: clickID }
+		const res = await ClickLink(order_ids).unwrap()
+		// if (res?.payment_link) {
+		// 	window.location.href = res.payment_link
+		// }
+		console.log(res)
 	}
 
 	console.log(data)
@@ -111,19 +122,42 @@ const MyOrder = () => {
 								<CardHeader className='pb-4'>
 									<div className='flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3'>
 										<div className='space-y-1'>
-											<div className='flex items-center gap-2'>
+											<div className='flex items-center w-full justify-between'>
 												<h3 className='text-lg font-semibold tracking-tight'>
 													Buyurtma №{order.order_id || index + 1}
 												</h3>
+												<p>
+													{order.is_paid == true ? (
+														<span className='bg-green-500 text-white p-2 rounded-md text-xs'>
+															To'langan
+														</span>
+													) : (
+														<span className='bg-red-500 text-white p-2 rounded-md text-xs'>
+															To'lanmagan
+														</span>
+													)}
+												</p>
 											</div>
 										</div>
-										<Badge
-											variant={statusConfig.variant}
-											className={`${statusConfig.className} flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium`}
-										>
-											<StatusIcon className='h-3.5 w-3.5' />
-											{statusConfig.label}
-										</Badge>
+										<div className='border w-full flex items-center justify-between'>
+											<Badge
+												variant={statusConfig.variant}
+												className={`${statusConfig.className} flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium`}
+											>
+												<StatusIcon className='h-3.5 w-3.5' />
+												{statusConfig.label}
+											</Badge>
+											<div className='text-white'>
+												<Button
+													onClick={() => {
+														handClick(order.order_id)
+													}}
+													className='text-white'
+												>
+													Click bilan to'lash
+												</Button>
+											</div>
+										</div>
 									</div>
 								</CardHeader>
 
@@ -201,6 +235,22 @@ const MyOrder = () => {
 													</div>
 												</div>
 											))}
+											{order.status == 'cancelled' ? (
+												''
+											) : (
+												<div className='w-full flex justify-end text-white text-[11px]'>
+													<Button
+														className='bg-red-500 hover:bg-red-400 duration-300'
+														onClick={() => {
+															handClick(order.order_id)
+														}}
+													>
+														{loads
+															? 'Bekor qilinmoqda...'
+															: 'Buyurtmani bekor qilish'}
+													</Button>
+												</div>
+											)}
 										</div>
 									</div>
 								</CardContent>

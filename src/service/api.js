@@ -120,10 +120,19 @@ export const api = createApi({
 			query: () => `/shop/order-history/`,
 			providesTags: ['Posts', 'Post'],
 		}),
+		ClickLink: builder.mutation({
+			query: order_id => ({
+				url: '/shop/cancel-order/',
+				method: 'POST',
+				body: order_id,
+			}),
+			invalidatesTags: ['Posts', 'Post'],
+		}),
 	}),
 })
 
 export const {
+	useClickLinkMutation,
 	useMyOrderQuery,
 	useSuccessOrderMutation,
 	useDeleteQuantityMutation,
