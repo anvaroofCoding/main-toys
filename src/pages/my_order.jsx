@@ -5,6 +5,7 @@ import { Separator } from '@/components/ui/separator'
 import { useClickLinkMutation, useMyOrderQuery } from '@/service/api'
 import { Image } from 'antd'
 import {
+	ArrowRight,
 	CheckCircle2,
 	Clock,
 	CreditCard,
@@ -67,7 +68,7 @@ const MyOrder = () => {
 				}
 			case 'delivering':
 				return {
-					label: 'Tetkazilyapdi',
+					label: 'Yetkazilyapdi',
 					variant: 'default',
 					icon: CheckCircle2,
 					className: 'bg-green-500 text-white hover:bg-green-600',
@@ -77,7 +78,7 @@ const MyOrder = () => {
 					label: 'Kutilmoqda',
 					variant: 'secondary',
 					icon: Clock,
-					className: 'bg-secondary text-secondary-foreground',
+					className: 'bg-yellow-400 text-white',
 				}
 			case 'cancelled':
 				return {
@@ -139,7 +140,7 @@ const MyOrder = () => {
 												</p>
 											</div>
 										</div>
-										<div className='border w-full flex items-center justify-between'>
+										<div className=' w-full flex items-center justify-between'>
 											<Badge
 												variant={statusConfig.variant}
 												className={`${statusConfig.className} flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium`}
@@ -147,16 +148,22 @@ const MyOrder = () => {
 												<StatusIcon className='h-3.5 w-3.5' />
 												{statusConfig.label}
 											</Badge>
-											<div className='text-white'>
-												<Button
-													onClick={() => {
-														handClick(order.order_id)
-													}}
-													className='text-white'
-												>
-													Click bilan to'lash
-												</Button>
-											</div>
+											{order.payment_method == 'naxt' ||
+											order.is_paid == true ||
+											order.status == 'cancelled' ? (
+												''
+											) : (
+												<div className='text-white'>
+													<Button
+														onClick={() => handClick(order.order_id)}
+														className='flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white transition-all duration-200 shadow-md px-4 py-2 rounded-xl'
+													>
+														<CreditCard className='w-4 h-4' />
+														<span>Click bilan to'lash</span>
+														<ArrowRight className='w-4 h-4' />
+													</Button>
+												</div>
+											)}
 										</div>
 									</div>
 								</CardHeader>
