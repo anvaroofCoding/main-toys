@@ -1,5 +1,6 @@
 import SButton from '@/components/Cbutton'
 import NewProducts from '@/components/newProducts'
+import ToyCarousel from '@/components/scroll'
 import { motion } from 'framer-motion'
 import { Sparkles } from 'lucide-react'
 import Header from '../components/header'
@@ -10,12 +11,7 @@ const Home = () => {
 			<Header />
 
 			<div className='py-10 bg-gray-50'>
-				<motion.div
-					initial={{ opacity: 0, y: 30 }}
-					whileInView={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.6, ease: 'easeOut' }}
-					className='text-center pb-6'
-				>
+				<motion.div className='text-center pb-6'>
 					<div className='flex items-center justify-center gap-2 mb-2'>
 						<Sparkles className='w-6 h-6 text-blue-500 animate-pulse' />
 						<h2 className='text-2xl sm:text-3xl font-bold text-gray-800'>
@@ -31,6 +27,9 @@ const Home = () => {
 				<div className='w-full text-center my-10'>
 					<SButton />
 				</div>
+			</div>
+			<div className='w-full h-auto pb-10'>
+				<ToyCarousel />
 			</div>
 		</div>
 	)
