@@ -42,6 +42,7 @@ export default function Order() {
 		)
 	}
 
+	console.log(data)
 	// Bo'sh savat
 	if (data.length === 0) {
 		return (
@@ -67,8 +68,6 @@ export default function Order() {
 			</div>
 		)
 	}
-
-	console.log(data)
 
 	// Qo'shish
 	const handleIncrease = async item => {
@@ -217,7 +216,7 @@ export default function Order() {
 									<Link href={`/product/${item.product_id}`}>
 										<div className='relative h-30 w-30 flex-shrink-0 overflow-hidden rounded-lg border bg-muted sm:h-24 sm:w-24'>
 											<Image
-												src={item.image || '/placeholder.svg'}
+												src={item.images[0] || '/placeholder.svg'}
 												alt={item.name}
 												className='h-full w-full object-contain p-2'
 											/>
@@ -234,6 +233,9 @@ export default function Order() {
 											</h3>
 											<p className='text-sm text-muted-foreground'>
 												{item.category}
+											</p>
+											<p className='text-xs font-semibold text-gray-500'>
+												{item.color}
 											</p>
 											<p className='text-base font-semibold text-blue-500 sm:text-lg'>
 												{(item.discounted_price || item.price).toLocaleString()}{' '}

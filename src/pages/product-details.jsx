@@ -1,8 +1,10 @@
-'use client'
-
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { useAddQuantityMutation, useProductsDetailQuery } from '@/service/api'
+import {
+	useAddCommentMutation,
+	useAddQuantityMutation,
+	useProductsDetailQuery,
+} from '@/service/api'
 import { ArrowLeft, Loader2, Minus, Plus, ShoppingCart } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
@@ -18,42 +20,64 @@ export default function ProductDetails() {
 		error,
 	} = useProductsDetailQuery(id)
 	const [addProducts, { isLoading: adding }] = useAddQuantityMutation()
+	const [addCommentm, { isLoading: comLoad }] = useAddCommentMutation()
 
 	// UI state
 	const [selectedImageIndex, setSelectedImageIndex] = useState(0)
 	const [selectedColor, setSelectedColor] = useState(null)
 	const [count, setCount] = useState(1)
 
+	const [commentText, setCommentText] = useState('')
+	const [selectedRating, setSelectedRating] = useState(5)
+
 	useEffect(() => {
 		if (product) {
 			setSelectedImageIndex(0)
-			setSelectedColor(product.images?.[0]?.color ?? null)
+			setSelectedColor(product.colors?.[0]?.color ?? null)
 			setCount(1)
 		}
 	}, [product])
 
-	// Unique color options
-	const colorOptions = useMemo(() => {
-		if (!product?.images) return []
-		const map = new Map()
-		product.images.forEach(img => {
-			if (!map.has(img.color)) map.set(img.color, img)
+	const allImages = useMemo(() => {
+		if (!product?.colors) return []
+		const images = []
+		product.colors.forEach(colorObj => {
+			colorObj.images.forEach(imageUrl => {
+				images.push({
+					url: imageUrl,
+					color: colorObj.color,
+					colorId: colorObj.id,
+					quantity: colorObj.quantity,
+				})
+			})
 		})
-		return Array.from(map.values())
+		return images
 	}, [product])
 
-	const displayedImage = product?.images?.[selectedImageIndex]?.image
+	const colorOptions = useMemo(() => {
+		if (!product?.colors) return []
+		return product.colors.map(colorObj => ({
+			id: colorObj?.id,
+			color: colorObj?.color,
+			image: colorObj?.images[0],
+			quantity: colorObj.quantity,
+		}))
+	}, [product])
+
+	const displayedImage = allImages[selectedImageIndex]?.url
 
 	const handleSelectColor = color => {
 		setSelectedColor(color)
-		const idx = product.images.findIndex(i => i.color === color)
+		const idx = allImages.findIndex(img => img.color === color)
 		if (idx >= 0) setSelectedImageIndex(idx)
 	}
 
 	const handleDecrease = () => setCount(prev => Math.max(1, prev - 1))
 	const handleIncrease = () => {
-		const selectedImg = product.images?.find(i => i.color === selectedColor)
-		const maxQuantity = selectedImg?.quantity || 9999
+		const selectedColorObj = product.colors?.find(
+			c => c.color === selectedColor
+		)
+		const maxQuantity = selectedColorObj?.quantity || 9999
 
 		setCount(prev => {
 			if (prev < maxQuantity) return prev + 1
@@ -62,6 +86,7 @@ export default function ProductDetails() {
 		})
 	}
 
+	console.log(product)
 	const handleAddToCart = async () => {
 		if (!product) return
 		try {
@@ -74,6 +99,29 @@ export default function ProductDetails() {
 			toast.success('Mahsulot savatga qo`shildi')
 		} catch (err) {
 			toast.error(`Mahsulotni qo'shishda xatolik yuz berdi: ${err}`)
+		}
+	}
+
+	const handleSubmitComment = async () => {
+		if (!commentText.trim()) {
+			toast.error('Iltimos, fikringizni yozing')
+			return
+		}
+
+		try {
+			const payload = {
+				product_id: Number(id),
+				comment: commentText,
+				rating: selectedRating,
+			}
+			await addCommentm(payload).unwrap()
+			console.log(payload)
+			toast.success("Fikringiz muvaffaqiyatli qo'shildi!")
+			setCommentText('')
+			setSelectedRating(5)
+		} catch (err) {
+			toast.error("Fikr qo'shishda xatolik yuz berdi")
+			console.log(err)
 		}
 	}
 
@@ -102,7 +150,6 @@ export default function ProductDetails() {
 
 	const avgRating = Number.parseFloat(product.average_rating || '0')
 
-	console.log(product)
 	return (
 		<div className='min-h-screen bg-background pb-20'>
 			<Toaster position='top-center' richColors />
@@ -139,7 +186,7 @@ export default function ProductDetails() {
 									/>
 								)}
 
-								{product.images?.length > 1 && (
+								{allImages.length > 1 && (
 									<>
 										<Button
 											onClick={() =>
@@ -155,12 +202,10 @@ export default function ProductDetails() {
 										<Button
 											onClick={() =>
 												setSelectedImageIndex(i =>
-													Math.min((product.images?.length ?? 1) - 1, i + 1)
+													Math.min(allImages.length - 1, i + 1)
 												)
 											}
-											disabled={
-												selectedImageIndex === (product.images?.length ?? 1) - 1
-											}
+											disabled={selectedImageIndex === allImages.length - 1}
 											variant='secondary'
 											size='icon'
 											className='absolute right-4 top-1/2 -translate-y-1/2 rounded-full shadow-lg disabled:opacity-30'
@@ -170,9 +215,9 @@ export default function ProductDetails() {
 									</>
 								)}
 
-								{product.images?.length > 1 && (
+								{allImages.length > 1 && (
 									<div className='absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2'>
-										{product.images.map((_, idx) => (
+										{allImages.map((_, idx) => (
 											<button
 												key={idx}
 												onClick={() => setSelectedImageIndex(idx)}
@@ -188,11 +233,11 @@ export default function ProductDetails() {
 							</div>
 						</Card>
 
-						{product.images?.length > 1 && (
+						{allImages.length > 1 && (
 							<div className='hidden sm:grid grid-cols-5 gap-3'>
-								{product.images.slice(0, 5).map((img, idx) => (
+								{allImages.slice(0, 5).map((img, idx) => (
 									<button
-										key={img.id}
+										key={idx}
 										onClick={() => setSelectedImageIndex(idx)}
 										className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${
 											selectedImageIndex === idx
@@ -201,7 +246,7 @@ export default function ProductDetails() {
 										}`}
 									>
 										<img
-											src={img.image || '/placeholder.svg'}
+											src={img.url || '/placeholder.svg'}
 											alt={img.color}
 											className='w-full h-full object-contain p-2 bg-muted/30'
 										/>
@@ -280,55 +325,50 @@ export default function ProductDetails() {
 								Rangini tanlang
 							</h4>
 							<div className='flex flex-wrap gap-3'>
-								{colorOptions.map(img => {
-									const colorQuantity =
-										product.images.find(i => i.color === img.color)?.quantity ??
-										0
-									return (
-										<button
-											key={img.id}
-											onClick={() => handleSelectColor(img.color)}
-											className={`group relative flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all hover:shadow-md ${
-												selectedColor === img.color
-													? 'border-blue-500 bg-blue-500/5 shadow-md'
-													: 'border-border hover:border-blue-500/50'
-											}`}
-										>
-											<div className='w-16 h-16 rounded-lg overflow-hidden bg-muted/30 flex items-center justify-center'>
-												<img
-													src={img.image || '/placeholder.svg'}
-													alt={img.color}
-													className='w-full h-full object-contain p-1'
-												/>
+								{colorOptions.map(colorObj => (
+									<button
+										key={colorObj.id}
+										onClick={() => handleSelectColor(colorObj.color)}
+										className={`group relative flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all hover:shadow-md ${
+											selectedColor === colorObj.color
+												? 'border-blue-500 bg-blue-500/5 shadow-md'
+												: 'border-border hover:border-blue-500/50'
+										}`}
+									>
+										<div className='w-16 h-16 rounded-lg overflow-hidden bg-muted/30 flex items-center justify-center'>
+											<img
+												src={colorObj.image || '/placeholder.svg'}
+												alt={colorObj.color}
+												className='w-full h-full object-contain p-1'
+											/>
+										</div>
+										<div className='text-center'>
+											<span className='text-sm font-medium block'>
+												{colorObj.color}
+											</span>
+											<span className='text-xs text-muted-foreground'>
+												{colorObj.quantity} dona
+											</span>
+										</div>
+										{selectedColor === colorObj.color && (
+											<div className='absolute -top-1 -right-1 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center'>
+												<svg
+													className='w-3 h-3 text-white'
+													fill='none'
+													viewBox='0 0 24 24'
+													stroke='currentColor'
+												>
+													<path
+														strokeLinecap='round'
+														strokeLinejoin='round'
+														strokeWidth={3}
+														d='M5 13l4 4L19 7'
+													/>
+												</svg>
 											</div>
-											<div className='text-center'>
-												<span className='text-sm font-medium block'>
-													{img.color}
-												</span>
-												<span className='text-xs text-muted-foreground'>
-													{colorQuantity} dona
-												</span>
-											</div>
-											{selectedColor === img.color && (
-												<div className='absolute -top-1 -right-1 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center'>
-													<svg
-														className='w-3 h-3 text-white'
-														fill='none'
-														viewBox='0 0 24 24'
-														stroke='currentColor'
-													>
-														<path
-															strokeLinecap='round'
-															strokeLinejoin='round'
-															strokeWidth={3}
-															d='M5 13l4 4L19 7'
-														/>
-													</svg>
-												</div>
-											)}
-										</button>
-									)
-								})}
+										)}
+									</button>
+								))}
 							</div>
 						</div>
 
@@ -336,7 +376,6 @@ export default function ProductDetails() {
 							<div className='flex items-center justify-center rounded-xl border-2 border-border overflow-hidden bg-muted/30'>
 								<Button
 									onClick={handleDecrease}
-									// disabled={count <= 1}
 									variant='ghost'
 									size='icon'
 									className='h-10 w-10 rounded-none hover:bg-blue-500/10 hover:text-blue-500 disabled:opacity-30'
@@ -350,7 +389,6 @@ export default function ProductDetails() {
 
 								<Button
 									onClick={handleIncrease}
-									// disabled={count >= product.quantity}
 									variant='ghost'
 									size='icon'
 									className='h-14 w-14 rounded-none hover:bg-blue-500/10 hover:text-blue-500 disabled:opacity-30'
@@ -373,6 +411,63 @@ export default function ProductDetails() {
 
 						<div className='pt-8 space-y-4'>
 							<h3 className='text-xl font-bold'>Fikrlar</h3>
+
+							<Card className='p-6 space-y-4 bg-muted/30'>
+								<h4 className='font-semibold'>Fikr qoldiring</h4>
+
+								<div className='space-y-2'>
+									<label className='text-sm font-medium'>Baho</label>
+									<div className='flex items-center gap-2'>
+										{[1, 2, 3, 4, 5].map(rating => (
+											<button
+												key={rating}
+												onClick={() => setSelectedRating(rating)}
+												className='transition-transform hover:scale-110'
+											>
+												<svg
+													width='32'
+													height='32'
+													viewBox='0 0 24 24'
+													fill={
+														rating <= selectedRating ? 'currentColor' : 'none'
+													}
+													stroke='currentColor'
+													strokeWidth='1.5'
+													className={`${
+														rating <= selectedRating
+															? 'text-yellow-500'
+															: 'text-muted-foreground/30'
+													}`}
+												>
+													<path d='M12 .587l3.668 7.431 8.2 1.192-5.934 5.788 1.402 8.168L12 18.896 4.664 23.166l1.402-8.168L0.132 9.209l8.2-1.192z' />
+												</svg>
+											</button>
+										))}
+										<span className='ml-2 text-sm font-medium'>
+											{selectedRating} yulduz
+										</span>
+									</div>
+								</div>
+
+								<div className='space-y-2'>
+									<label className='text-sm font-medium'>Fikringiz</label>
+									<textarea
+										value={commentText}
+										onChange={e => setCommentText(e.target.value)}
+										placeholder='Mahsulot haqida fikringizni yozing...'
+										className='w-full min-h-[100px] p-3 rounded-lg border-2 border-border bg-background focus:border-blue-500 focus:outline-none resize-none'
+									/>
+								</div>
+
+								<Button
+									onClick={handleSubmitComment}
+									disabled={comLoad || !commentText.trim()}
+									className='w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg disabled:opacity-60'
+								>
+									{comLoad ? 'Yuborilmoqda...' : 'Fikr yuborish'}
+								</Button>
+							</Card>
+
 							{product.reviews?.length ? (
 								<div className='space-y-3'>
 									{product.reviews.map(r => (

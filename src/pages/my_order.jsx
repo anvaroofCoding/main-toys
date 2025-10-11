@@ -41,8 +41,6 @@ const MyOrder = () => {
 		}
 	}
 
-	console.log(data)
-
 	if (!data.length) {
 		return (
 			<div className='flex flex-col items-center justify-center min-h-screen px-4'>
@@ -104,6 +102,7 @@ const MyOrder = () => {
 		}
 	}
 
+	console.log(data)
 	return (
 		<div className='min-h-screen bg-background pb-20'>
 			<Toaster position='top-center' richColors />
@@ -124,7 +123,7 @@ const MyOrder = () => {
 
 						return (
 							<Card
-								key={order.order_id || index}
+								key={order?.order_id || index}
 								className='border border-border shadow-sm hover:shadow-md transition-shadow duration-200'
 							>
 								<CardHeader className='pb-4'>
@@ -149,20 +148,20 @@ const MyOrder = () => {
 										</div>
 										<div className='w-full flex flex-col lg:flex-row items-start gap-5 justify-between'>
 											<Badge
-												variant={statusConfig.variant}
+												variant={statusConfig?.variant}
 												className={`${statusConfig.className} flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium`}
 											>
 												<StatusIcon className='h-3.5 w-3.5' />
 												{statusConfig.label}
 											</Badge>
-											{order.payment_method == 'naxt' ||
-											order.is_paid == true ||
-											order.status == 'cancelled' ? (
+											{order?.payment_method == 'naxt' ||
+											order?.is_paid == true ||
+											order?.status == 'cancelled' ? (
 												''
 											) : (
 												<div className='text-white'>
 													<Button
-														onClick={() => handPayment(order.payment_link)}
+														onClick={() => handPayment(order?.payment_link)}
 														className='flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white transition-all duration-200 shadow-md px-4 py-2 rounded-xl'
 													>
 														<CreditCard className='w-4 h-4' />
@@ -223,7 +222,7 @@ const MyOrder = () => {
 													className='flex items-start justify-between gap-4 p-4 rounded-lg bg-card border border-border hover:border-blue-500/30 transition-colors duration-200'
 												>
 													<Image
-														src={item.image[0]}
+														src={item?.images[0]}
 														alt={item.product_name}
 														width={100}
 													/>

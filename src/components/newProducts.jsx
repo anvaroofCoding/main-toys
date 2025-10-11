@@ -95,13 +95,13 @@ const NewProducts = () => {
 							className='relative aspect-square w-full bg-gray-50 cursor-pointer'
 						>
 							<img
-								src={product.images?.[0]?.image}
-								alt={product.name}
+								src={product?.colors?.[0]?.images[0]}
+								alt={product?.name}
 								className='object-cover w-full h-full'
 							/>
-							{product.discount > 0 && (
+							{product?.discount > 0 && (
 								<span className='absolute top-2 left-2 bg-red-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full'>
-									-{product.discount}%
+									-{product?.discount}%
 								</span>
 							)}
 						</div>

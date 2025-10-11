@@ -106,6 +106,7 @@ const Checkout = () => {
 		)
 
 	console.log(cart)
+
 	return (
 		<div className='min-h-screen pb-30 bg-gradient-to-b from-gray-50 to-white py-8 px-4 sm:px-6 lg:px-8'>
 			<Toaster
@@ -237,27 +238,31 @@ const Checkout = () => {
 												className='flex items-center justify-between gap-5 rounded-lg border border-gray-100 bg-gray-50/50 p-4 transition-colors hover:bg-gray-50'
 											>
 												<Image
-													src={item.image}
+													src={item.images[0]}
 													alt={item.name}
 													width={50}
 													className='rounded-md'
 												/>
 												<div className='flex-1'>
-													<p className='font-medium text-gray-900'>
+													<p className='font-medium text-gray-900 text-[11px] lg:text-lg'>
 														{item.name}
 													</p>
-													<div className='mt-1 flex items-center gap-3 text-sm text-muted-foreground'>
-														<span>{item.quantity} dona</span>
+													<div className='mt-1 flex w-full items-center justify-between gap-3 text-sm text-muted-foreground'>
+														<span className='text-[11px]'>
+															{item.quantity} dona
+														</span>
 														<span className='h-1 w-1 rounded-full bg-gray-300' />
-														<span className='capitalize'>{item.color}</span>
+														<span className='capitalize text-[11px]'>
+															{item.color}
+														</span>
+														<span className='text-base font-semibold text-blue-500  text-[12px] lg:text-lg'>
+															{(
+																item.quantity * Number.parseFloat(item.price)
+															).toLocaleString()}{' '}
+															so'm
+														</span>
 													</div>
 												</div>
-												<p className='text-base font-semibold text-blue-500'>
-													{(
-														item.quantity * Number.parseFloat(item.price)
-													).toLocaleString()}{' '}
-													so'm
-												</p>
 											</div>
 										))}
 									</div>

@@ -128,10 +128,19 @@ export const api = createApi({
 			}),
 			invalidatesTags: ['Posts', 'Post'],
 		}),
+		AddComment: builder.mutation({
+			query: formdata => ({
+				url: '/shop/comment-create/',
+				method: 'POST',
+				body: formdata,
+			}),
+			invalidatesTags: ['Posts', 'Post'],
+		}),
 	}),
 })
 
 export const {
+	useAddCommentMutation,
 	useClickLinkMutation,
 	useMyOrderQuery,
 	useSuccessOrderMutation,

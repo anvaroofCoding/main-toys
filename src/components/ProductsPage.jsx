@@ -40,15 +40,14 @@ const ProductsPage = () => {
 		const quantityData = {
 			product_id: item.id,
 			quantity: 1,
-			color: item.images[0].color,
+			color: item.colors[0].color,
 		}
 		const getCardFinded = getCardProd?.find(itemBox => {
 			return (
 				itemBox.product_id == item.id &&
-				itemBox.quantity >= item.images[0].quantity
+				itemBox.quantity >= item.colors[0].quantity
 			)
 		})
-		console.log(getCardFinded)
 		try {
 			if (getCardFinded) {
 				toast.error(`Omborda ${item.images[0].quantity} dona qolgan!`)
@@ -59,8 +58,8 @@ const ProductsPage = () => {
 				setActiveId(null)
 			}
 		} catch (error) {
-			console.error('🔴 Xatolik:', error)
-			toast.error('Mahsulotni qo‘shishda xatolik yuz berdi!')
+			toast.warning('Omborda boshqa qolmadi!')
+			console.log(error)
 			setActiveId(null)
 		}
 	}
@@ -173,7 +172,7 @@ const ProductsPage = () => {
 									className='relative aspect-square w-full bg-gray-50 cursor-pointer'
 								>
 									<img
-										src={product.images?.[0]?.image}
+										src={product.colors[0]?.images[0]}
 										alt={product.name}
 										className='object-cover w-full h-full'
 									/>
