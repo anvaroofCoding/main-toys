@@ -8,6 +8,7 @@ import { store } from './app/store'
 import Login from './auth/login'
 import './index.css'
 import Allp from './pages/Allp'
+import Category from './pages/category'
 import Checkout from './pages/checkout'
 import Home from './pages/home'
 import MyOrder from './pages/my_order'
@@ -30,6 +31,7 @@ createRoot(document.getElementById('root')).render(
 						/>
 						<Route path='/checkout' element={<Checkout />} />
 						<Route path='/my-order' element={<MyOrder />} />
+						<Route path='/sozlamalar' element={<Category />} />
 					</Route>
 				</Routes>
 			</BrowserRouter>

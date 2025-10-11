@@ -19,10 +19,11 @@ import {
 import NoData from './noData'
 
 const ProductsPage = () => {
+	const savedCat = localStorage.getItem('selectedCategory')
 	const [page, setPage] = useState(1)
 	const [isPageLoading, setIsPageLoading] = useState(false)
 	const [searchTerm, setSearchTerm] = useState('')
-	const [selectedCategory, setSelectedCategory] = useState('')
+	const [selectedCategory, setSelectedCategory] = useState(savedCat || '')
 	const navigate = useNavigate()
 	const [activeId, setActiveId] = useState(null)
 

@@ -1,7 +1,6 @@
 import { useGetMeQuery, useUpdateUserMutation } from '@/service/api'
 import {
 	Edit3,
-	Hash,
 	Home,
 	Loader2,
 	LogOut,
@@ -76,27 +75,19 @@ const Profile = () => {
 	}
 
 	return (
-		<div className='w-full min-h-screen flex items-center justify-center pb-18 overflow-hidden'>
+		<div className='w-full h-screen flex items-start justify-center overflow-hidden'>
 			<Toaster position='top-center' />
 
-			<div className='w-full max-w-lg bg-white/80 backdrop-blur-xl rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] overflow-hidden border border-blue-100 transition-all'>
+			<div className='w-full max-w-lg bg-white/80 backdrop-blur-xl  shadow-[0_10px_40px_rgba(0,0,0,0.1)] overflow-hiddentransition-all'>
 				{/* Header */}
-				<div className='relative bg-blue-600 text-white py-8 px-6 flex flex-col items-center justify-center'>
-					<div className='w-24 h-24 rounded-full bg-blue-500/40 border-4 border-white flex items-center justify-center shadow-lg'>
+				<div className='relative bg-blue-600 text-white pt-3 px-6 flex flex-col items-center justify-center'>
+					<div className='w-18 h-18 rounded-full bg-blue-500/40 border-4 border-white flex items-center justify-center shadow-lg'>
 						<User size={40} strokeWidth={1.5} />
 					</div>
 					<h2 className='text-2xl font-semibold mt-3'>
 						{userData?.first_name} {userData?.last_name}
 					</h2>
 					<p className='text-blue-100 text-sm mt-1'>Foydalanuvchi profili</p>
-
-					<button
-						onClick={handleLogout}
-						className='absolute top-5 right-5 flex items-center gap-1.5 text-white/80 hover:text-white bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg text-xs sm:text-sm transition-all'
-					>
-						<LogOut size={14} />
-						Chiqish
-					</button>
 				</div>
 
 				{/* Body */}
@@ -161,11 +152,6 @@ const Profile = () => {
 					) : (
 						<>
 							<ProfileInfo
-								icon={<Hash className='text-blue-600 w-4 h-4' />}
-								label='Foydalanuvchi ID'
-								value={userData?.id}
-							/>
-							<ProfileInfo
 								icon={<Phone className='text-blue-600 w-4 h-4' />}
 								label='Telefon raqam'
 								value={`+${userData?.phone_number}`}
@@ -194,11 +180,18 @@ const Profile = () => {
 								</a>
 								<a
 									href='/my-order'
-									className='flex items-center gap-3 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2.5 rounded-xl text-sm font-medium border transition-all'
+									className='flex items-center gap-3 bg-yellow-600 hover:bg-yellow-500 text-white px-4 py-2.5 rounded-xl text-sm font-medium border transition-all'
 								>
 									<Package size={16} />
 									Mening buyurtmalarim
 								</a>
+								<button
+									onClick={handleLogout}
+									className='flex items-center gap-1.5 text-white/80 hover:text-white bg-red-500 hover:bg-red-500/30 duration-300 px-3 py-3 rounded-lg text-xs sm:text-sm transition-all'
+								>
+									<LogOut size={14} />
+									Chiqish
+								</button>
 							</div>
 						</>
 					)}
