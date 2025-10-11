@@ -136,10 +136,15 @@ export const api = createApi({
 			}),
 			invalidatesTags: ['Posts', 'Post'],
 		}),
+		GetComment: builder.query({
+			query: id => `/shop/product-comments/${id}/`,
+			providesTags: ['Posts', 'Post'],
+		}),
 	}),
 })
 
 export const {
+	useGetCommentQuery,
 	useAddCommentMutation,
 	useClickLinkMutation,
 	useMyOrderQuery,

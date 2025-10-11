@@ -1,11 +1,21 @@
+import NewProducts from '@/components/newProducts'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import {
 	useAddCommentMutation,
 	useAddQuantityMutation,
+	useGetCommentQuery,
 	useProductsDetailQuery,
 } from '@/service/api'
-import { ArrowLeft, Loader2, Minus, Plus, ShoppingCart } from 'lucide-react'
+import {
+	ArrowLeft,
+	Loader2,
+	Minus,
+	Plus,
+	Send,
+	ShoppingCart,
+	Star,
+} from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { toast, Toaster } from 'sonner'
@@ -21,6 +31,7 @@ export default function ProductDetails() {
 	} = useProductsDetailQuery(id)
 	const [addProducts, { isLoading: adding }] = useAddQuantityMutation()
 	const [addCommentm, { isLoading: comLoad }] = useAddCommentMutation()
+	const { data: comments, isLoading: comLoads } = useGetCommentQuery(id)
 
 	// UI state
 	const [selectedImageIndex, setSelectedImageIndex] = useState(0)
@@ -86,7 +97,6 @@ export default function ProductDetails() {
 		})
 	}
 
-	console.log(product)
 	const handleAddToCart = async () => {
 		if (!product) return
 		try {
@@ -115,7 +125,6 @@ export default function ProductDetails() {
 				rating: selectedRating,
 			}
 			await addCommentm(payload).unwrap()
-			console.log(payload)
 			toast.success("Fikringiz muvaffaqiyatli qo'shildi!")
 			setCommentText('')
 			setSelectedRating(5)
@@ -125,7 +134,7 @@ export default function ProductDetails() {
 		}
 	}
 
-	if (isLoading || isFetching)
+	if (isLoading || isFetching || comLoads)
 		return (
 			<div className='flex min-h-screen items-center justify-center bg-background'>
 				<div className='flex flex-col items-center gap-3'>
@@ -134,6 +143,8 @@ export default function ProductDetails() {
 				</div>
 			</div>
 		)
+
+	console.log(comments)
 
 	if (error)
 		return (
@@ -172,7 +183,7 @@ export default function ProductDetails() {
 				<div className='grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16'>
 					<div className='space-y-4'>
 						<Card className='overflow-hidden border-0 shadow-lg'>
-							<div className='relative aspect-square bg-muted/30'>
+							<div className='relative h-80 aspect-square bg-muted/30'>
 								{product.video_url ? (
 									<video controls className='w-full h-full object-contain'>
 										<source src={product.video_url} />
@@ -182,7 +193,7 @@ export default function ProductDetails() {
 									<img
 										src={displayedImage || '/placeholder.svg'}
 										alt={product.name}
-										className='w-full h-full object-contain p-8'
+										className='w-full h-full object-contain p-8 '
 									/>
 								)}
 
@@ -410,14 +421,12 @@ export default function ProductDetails() {
 						</div>
 
 						<div className='pt-8 space-y-4'>
-							<h3 className='text-xl font-bold'>Fikrlar</h3>
-
 							<Card className='p-6 space-y-4 bg-muted/30'>
 								<h4 className='font-semibold'>Fikr qoldiring</h4>
 
-								<div className='space-y-2'>
-									<label className='text-sm font-medium'>Baho</label>
-									<div className='flex items-center gap-2'>
+								<div className='space-y-4'>
+									<label className='text-sm font-medium'>Baho qo'ying</label>
+									<div className='flex items-center gap-2 py-2'>
 										{[1, 2, 3, 4, 5].map(rating => (
 											<button
 												key={rating}
@@ -449,65 +458,86 @@ export default function ProductDetails() {
 									</div>
 								</div>
 
-								<div className='space-y-2'>
-									<label className='text-sm font-medium'>Fikringiz</label>
+								<div className='space-y-5'>
 									<textarea
 										value={commentText}
 										onChange={e => setCommentText(e.target.value)}
 										placeholder='Mahsulot haqida fikringizni yozing...'
-										className='w-full min-h-[100px] p-3 rounded-lg border-2 border-border bg-background focus:border-blue-500 focus:outline-none resize-none'
+										className='w-full min-h-[100px] mt-3 p-3 rounded-lg border-2 border-border bg-background focus:border-blue-500 focus:outline-none resize-none'
 									/>
 								</div>
 
-								<Button
-									onClick={handleSubmitComment}
-									disabled={comLoad || !commentText.trim()}
-									className='w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg disabled:opacity-60'
-								>
-									{comLoad ? 'Yuborilmoqda...' : 'Fikr yuborish'}
-								</Button>
-							</Card>
-
-							{product.reviews?.length ? (
-								<div className='space-y-3'>
-									{product.reviews.map(r => (
-										<Card
-											key={r.id}
-											className='p-4 hover:shadow-md transition-shadow'
-										>
-											<div className='flex justify-between items-start mb-2'>
-												<div className='font-semibold'>
-													{r.user_name || 'Foydalanuvchi'}
-												</div>
-												<div className='flex items-center gap-1 text-sm font-medium'>
-													<svg
-														width='16'
-														height='16'
-														viewBox='0 0 24 24'
-														fill='currentColor'
-														className='text-yellow-500'
-													>
-														<path d='M12 .587l3.668 7.431 8.2 1.192-5.934 5.788 1.402 8.168L12 18.896 4.664 23.166l1.402-8.168L0.132 9.209l8.2-1.192z' />
-													</svg>
-													{r.rating}
-												</div>
-											</div>
-											<p className='text-sm text-muted-foreground leading-relaxed'>
-												{r.comment}
-											</p>
-										</Card>
-									))}
+								<div className='text-white'>
+									<Button
+										onClick={handleSubmitComment}
+										disabled={comLoad || !commentText.trim()}
+										className='w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg flex items-center justify-center gap-2 disabled:opacity-60 transition-all duration-200'
+									>
+										{comLoad ? (
+											<>
+												<Loader2 className='w-4 h-4 animate-spin' />
+												<span>Yuborilmoqda...</span>
+											</>
+										) : (
+											<>
+												<Send className='w-4 h-4' />
+												<span>Fikr yuborish</span>
+											</>
+										)}
+									</Button>
 								</div>
-							) : (
-								<Card className='p-8 text-center'>
-									<p className='text-muted-foreground'>
-										Hozircha fikrlar yo'q.
+							</Card>
+							{comments.map(comment => (
+								<Card
+									key={comment.id}
+									className='p-4 hover:shadow-md transition-shadow duration-200'
+								>
+									{/* Yuqori qism: ism, baho, sana */}
+									<div className='flex justify-between items-start mb-2'>
+										<div>
+											<h4 className='font-semibold text-gray-800'>
+												{comment.first_name || 'Foydalanuvchi'}
+											</h4>
+											<p className='text-xs text-gray-400'>
+												{new Date(comment.created_at).toLocaleDateString(
+													'uz-UZ',
+													{
+														year: 'numeric',
+														month: 'short',
+														day: 'numeric',
+													}
+												)}
+											</p>
+										</div>
+
+										{/* Yulduzli baho */}
+										<div className='flex items-center gap-1 text-sm font-medium'>
+											{[...Array(5)].map((_, i) => (
+												<Star
+													key={i}
+													className={`w-4 h-4 ${
+														i < comment.rating
+															? 'text-yellow-400 fill-yellow-400'
+															: 'text-gray-300'
+													}`}
+												/>
+											))}
+										</div>
+									</div>
+
+									{/* Fikr matni */}
+									<p className='text-sm text-gray-600 leading-relaxed'>
+										{comment.text}
 									</p>
 								</Card>
-							)}
+							))}
 						</div>
 					</div>
 				</div>
+			</div>
+
+			<div className='my-10'>
+				<NewProducts />
 			</div>
 		</div>
 	)

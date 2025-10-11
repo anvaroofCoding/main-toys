@@ -57,14 +57,21 @@ const Card = () => {
 						</span>
 						<span>
 							<img
-								src='https://robotco.ru/wp-content/uploads/2020/07/perspective_T_front.png'
+								src='https://www.nicepng.com/png/detail/809-8094268_optimus-prime-stands-optimus-prime.png'
 								alt='toy'
 								className='w-20'
 							/>
 						</span>
 						<span>
 							<img
-								src='https://robotco.ru/wp-content/uploads/2020/07/perspective_T_front.png'
+								src='https://www.pngitem.com/pimgs/m/429-4295476_bumblebee-transformer-transparent-background-hd-png-download.png'
+								alt='toy'
+								className='w-20'
+							/>
+						</span>
+						<span>
+							<img
+								src='https://i5.walmartimages.com/seo/CifToys-Trex-Dinosaur-Toys-for-Kids-3-5-T-Rex-Toy-Realistic-Tyrannosaurus-Rex_847a91dd-8df3-4fae-a2a5-1b266bdfd870.c0bc20b87ca2e6ad8246979ab17342dd.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF'
 								alt='toy'
 								className='w-20'
 							/>
