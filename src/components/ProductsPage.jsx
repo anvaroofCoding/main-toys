@@ -7,8 +7,8 @@ import {
   ShoppingCart,
   Star,
 } from "lucide-react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast, Toaster } from "sonner";
 import {
   useAddQuantityMutation,
@@ -26,6 +26,15 @@ const ProductsPage = () => {
   const [selectedCategory, setSelectedCategory] = useState(savedCat || "");
   const navigate = useNavigate();
   const [activeId, setActiveId] = useState(null);
+  const location = useLocation();
+  const inputRef = useRef();
+
+  useEffect(() => {
+    // 🔹 Agar boshqa sahifadan "openSearch" signali kelsa
+    if (location.state?.openSearch) {
+      inputRef.current?.focus(); // inputni fokus qilamiz
+    }
+  }, [location.state]);
 
   const { data, isFetching, isLoading, error } = useProductsGetQuery({
     page,
@@ -110,6 +119,7 @@ const ProductsPage = () => {
 
           <input
             type="text"
+            ref={inputRef}
             placeholder="Qidiruv..."
             value={searchTerm}
             onChange={(e) => {

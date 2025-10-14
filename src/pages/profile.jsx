@@ -78,9 +78,9 @@ const Profile = () => {
     <div className="w-full h-screen flex items-start justify-center overflow-hidden bg-white">
       <Toaster position="top-center" />
 
-      <div className="w-full h-full max-w-lg   shadow-[0_10px_40px_rgba(0,0,0,0.1)] overflow-hiddentransition-all">
+      <div className="w-full h-full max-w-lg   shadow-[0_10px_40px_rgba(0,0,0,0.1)] overflow-hiddentransition-all ">
         {/* Header */}
-        <div className="relative bg-blue-600 text-white pt-3 px-6 flex flex-col items-center justify-center">
+        <div className="relative bg-blue-600 text-white pt-3 px-6 flex flex-col items-center justify-center rounded-b-4xl shadow-md">
           <div className="w-18 h-18 rounded-full bg-blue-500/40 border-4 border-white flex items-center justify-center shadow-lg">
             <User size={40} strokeWidth={1.5} />
           </div>
@@ -90,7 +90,7 @@ const Profile = () => {
         </div>
 
         {/* Body */}
-        <div className="p-2 space-y-4">
+        <div className="p-2 space-y-4 mt-4">
           {isEditing ? (
             <>
               <EditableField
