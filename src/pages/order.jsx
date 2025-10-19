@@ -59,11 +59,18 @@ export default function Order() {
 							Hozircha hech narsa qo'shilmagan
 						</p>
 					</div>
-					<Link to='/' className='text-white'>
-						<Button className='mt-4 bg-blue-500 hover:bg-blue-600'>
-							Xaridni davom etish
-						</Button>
-					</Link>
+					<div className='flex xl:flex-row flex-col gap-3'>
+						<Link to='/barcha-maxsulotlar' className='text-white'>
+							<Button className='mt-4 bg-blue-500 hover:bg-blue-600'>
+								Xaridni davom etish
+							</Button>
+						</Link>
+						<Link to='/my-order' className='text-white'>
+							<Button className='mt-4 bg-orange-500 hover:bg-orange-600'>
+								Buyurtmalarni kuzatish
+							</Button>
+						</Link>
+					</div>
 				</div>
 			</div>
 		)

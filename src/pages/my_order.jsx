@@ -18,6 +18,7 @@ import { toast, Toaster } from 'sonner'
 const MyOrder = () => {
 	const { data = [], isLoading } = useMyOrderQuery()
 	const [ClickLink, { isLoading: loads }] = useClickLinkMutation()
+	console.log(data)
 
 	if (isLoading) {
 		return (
@@ -238,7 +239,9 @@ const MyOrder = () => {
 														</p>
 														<div className='text-right shrink-0'>
 															<p className='text-sm font-semibold text-foreground whitespace-nowrap'>
-																{Number(item.price).toLocaleString('uz-UZ')}{' '}
+																{Number(item.total_price).toLocaleString(
+																	'uz-UZ'
+																)}{' '}
 																so'm
 															</p>
 															<p className='text-xs text-muted-foreground mt-0.5'>
