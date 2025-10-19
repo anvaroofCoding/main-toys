@@ -23,7 +23,7 @@ const Footer = () => {
 	]
 
 	return (
-		<footer className='bg-gradient-to-b pb-20 from-blue-500 via-blue-600 to-blue-600 text-white py-10 px-6 md:px-10 border-t border-white/10 rounded-t-3xl'>
+		<footer className='bg-gradient-to-b pb-20 from-blue-500 via-blue-500 to-blue-500 text-white py-10 px-6 md:px-10 border-t border-white/10 rounded-t-3xl'>
 			<div className='max-w-6xl mx-auto flex flex-col items-center text-center gap-8'>
 				{/* Contact Info */}
 				<div className='space-y-3'>
