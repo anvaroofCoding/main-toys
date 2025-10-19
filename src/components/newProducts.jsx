@@ -83,7 +83,7 @@ const NewProducts = () => {
 
 			<motion.div
 				layout
-				className={`grid grid-cols-2 sm:grid-cols-3 container md:grid-cols-4 gap-3 px-3 transition-opacity duration-300 ${
+				className={`grid grid-cols-2 sm:grid-cols-3 xl:container mx-auto md:grid-cols-4 gap-3 px-3 transition-opacity duration-300 ${
 					isFetching ? 'opacity-50 pointer-events-none' : 'opacity-100'
 				}`}
 			>

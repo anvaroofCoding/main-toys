@@ -130,7 +130,7 @@ const ProductsPage = () => {
 	}
 
 	return (
-		<div className='min-h-screen bg-gray-50 pb-24 pt-3 container'>
+		<div className='min-h-screen bg-gray-50 pb-24 pt-3 xl:container mx-auto'>
 			<Toaster position='top-center' richColors />
 			<h1 className='text-3xl font-semibold text-center text-gray-800 mb-5'>
 				Barcha mahsulotlar
