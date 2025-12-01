@@ -3,7 +3,7 @@ import { RedoOutlined, RollbackOutlined, SendOutlined } from '@ant-design/icons'
 import { Button } from 'antd'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { toast } from 'sonner'
+import { toast, Toaster } from 'sonner'
 
 const Login = () => {
 	const [rawPhone, setRawPhone] = useState('')
@@ -161,6 +161,7 @@ const Login = () => {
 
 	return (
 		<div className='w-full h-screen flex justify-center items-center flex-col gap-2'>
+			<Toaster richColors position='top-center' closeButton />
 			<div className='absolute top-5 left-5'>
 				<Button
 					variant='solid'

@@ -1,3 +1,5 @@
+import { useCallback, useEffect, useState } from 'react'
+// Zarur importlar
 import { useGetMeQuery, useUpdateUserMutation } from '@/service/api'
 import { Skeleton } from 'antd'
 import {
@@ -11,47 +13,50 @@ import {
 	User,
 	X,
 } from 'lucide-react'
-import { useState } from 'react'
 import { toast } from 'sonner'
 
+// --- ASOSIY KOMPONENT ---
+
 const Profile = () => {
-	const [load, setLoad] = useState(false)
+	// RTK Query hooks (loyihangizdan)
 	const { data, isLoading } = useGetMeQuery()
 	const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation()
+
+	const [load, setLoad] = useState(false)
+	const [isEditing, setIsEditing] = useState(false)
+
+	// 🔥 Form ichidagi ma’lumotlar
 	const [formData, setFormData] = useState({
 		first_name: '',
 		last_name: '',
 		phone_number: '',
 		address: '',
 	})
-	const [isEditing, setIsEditing] = useState(false)
 
-	const handleLogout = () => {
-		setLoad(true)
-		setTimeout(() => {
-			localStorage.clear()
-			toast.success('Muvaffaqiyatli chiqildi!')
-			window.location.pathname = '/login'
-			setLoad(false)
-		}, 1500)
-	}
+	const userData = data // Qulaylik uchun
 
-	const userData = data
-
-	// formData ni user ma’lumotlari bilan to‘ldiramiz
-	useState(() => {
-		setFormData({
-			first_name: data?.first_name,
-			last_name: data?.last_name,
-			phone_number: data?.phone_number,
-			address: data?.address,
-		})
+	// 🔥 API dan kelgan ma’lumot formga tushadi
+	useEffect(() => {
+		// data mavjud bo'lsa va isEditing false bo'lsa, ma'lumotlarni yuklash
+		if (data) {
+			setFormData({
+				first_name: data?.first_name || '',
+				last_name: data?.last_name || '',
+				// Telefon raqam mavjud bo'lmasa, localStorage'dan olish
+				phone_number: data?.phone_number || localStorage.getItem('phone') || '',
+				address: data?.address || '',
+			})
+		}
 	}, [data])
 
-	const handleChange = e => {
-		setFormData({ ...formData, [e.target.name]: e.target.value })
-	}
+	// 🔥 Input o‘zgarishi - TUZATISH: useCallback va funksional yangilanish
+	const handleChange = useCallback(e => {
+		const { name, value } = e.target
+		// Oldingi statega asoslanib yangilash
+		setFormData(prev => ({ ...prev, [name]: value }))
+	}, [])
 
+	// 🔥 Saqlash funksiyasi
 	const handleSave = async () => {
 		try {
 			await updateUser(formData).unwrap()
@@ -63,6 +68,32 @@ const Profile = () => {
 		}
 	}
 
+	// 🔥 Logout
+	const handleLogout = () => {
+		setLoad(true)
+		setTimeout(() => {
+			localStorage.clear()
+			toast.success('Muvaffaqiyatli chiqildi!')
+			window.location.pathname = '/login'
+			setLoad(false)
+		}, 1500)
+	}
+
+	// Bekor qilish funksiyasi
+	const handleCancel = () => {
+		// O'zgartirilgan ma'lumotlarni asl (data) ma'lumotlarga qaytarish
+		if (data) {
+			setFormData({
+				first_name: data?.first_name || '',
+				last_name: data?.last_name || '',
+				phone_number: data?.phone_number || localStorage.getItem('phone') || '',
+				address: data?.address || '',
+			})
+		}
+		setIsEditing(false)
+	}
+
+	// 🔄 Skeleton holati
 	if (load || isLoading) {
 		return (
 			<div className='w-full h-screen flex items-start justify-center bg-white'>
@@ -94,7 +125,7 @@ const Profile = () => {
 
 	return (
 		<div className='w-full h-screen flex items-start justify-center overflow-hidden bg-white'>
-			<div className='w-full h-full max-w-lg   shadow-[0_10px_40px_rgba(0,0,0,0.1)] overflow-hiddentransition-all '>
+			<div className='w-full h-full max-w-lg shadow-[0_10px_40px_rgba(0,0,0,0.1)] overflow-hiddentransition-all'>
 				{/* Header */}
 				<div className='relative bg-blue-600 text-white pt-3 px-6 flex flex-col items-center justify-center rounded-b-4xl shadow-md'>
 					<div className='w-18 h-18 rounded-full bg-blue-500/40 border-4 border-white flex items-center justify-center shadow-lg'>
@@ -109,36 +140,39 @@ const Profile = () => {
 				<div className='p-2 space-y-4 mt-4'>
 					{isEditing ? (
 						<>
+							{/* TUZATISH: value={formData.first_name} ni ishlatish */}
 							<EditableField
 								icon={<User className='text-blue-600 w-4 h-4' />}
 								label='Ism'
 								name='first_name'
-								value={data?.first_name}
+								value={formData.first_name}
 								onChange={handleChange}
 							/>
+
+							{/* TUZATISH: value={formData.last_name} ni ishlatish */}
 							<EditableField
 								icon={<User className='text-blue-600 w-4 h-4' />}
 								label='Familiya'
 								name='last_name'
-								value={data?.last_name}
+								value={formData.last_name}
 								onChange={handleChange}
 							/>
+
+							{/* TUZATISH: value={formData.phone_number} ni ishlatish */}
 							<EditableField
 								icon={<Phone className='text-blue-600 w-4 h-4' />}
 								label='Telefon raqam'
 								name='phone_number'
-								value={
-									data?.phone_number
-										? data.phone_number
-										: '+' + localStorage.getItem('phone')
-								}
+								value={formData.phone_number}
 								onChange={handleChange}
 							/>
+
+							{/* TUZATISH: value={formData.address} ni ishlatish */}
 							<EditableField
 								icon={<MapPin className='text-blue-600 w-4 h-4' />}
 								label='Manzil'
 								name='address'
-								value={data.address}
+								value={formData.address}
 								onChange={handleChange}
 							/>
 
@@ -156,7 +190,7 @@ const Profile = () => {
 									)}
 								</button>
 								<button
-									onClick={() => setIsEditing(false)}
+									onClick={handleCancel} // Bekor qilish funksiyasini chaqirish
 									className='flex-1 flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2.5 rounded-xl text-sm font-medium border transition-all'
 								>
 									<X size={16} />
@@ -202,7 +236,7 @@ const Profile = () => {
 								</a>
 								<button
 									onClick={handleLogout}
-									className='flex items-center gap-1.5 text-white/80 hover:text-white bg-red-500 hover:bg-red-500/30 duration-300 px-3 py-3 rounded-lg text-xs sm:text-sm transition-all'
+									className='flex items-center gap-1.5 text-white/80 hover:text-white bg-red-500 hover:bg-red-600 duration-300 px-3 py-3 rounded-lg text-xs sm:text-sm transition-all'
 								>
 									<LogOut size={14} />
 									Chiqish
@@ -216,12 +250,16 @@ const Profile = () => {
 	)
 }
 
+// --- YORDAMCHI KOMPONENTLAR ---
+
 const ProfileInfo = ({ icon, label, value }) => (
 	<div className='flex items-center gap-3 bg-gray-50 hover:bg-gray-100 p-4 rounded-xl border border-gray-200 transition-all'>
 		<div className='flex-shrink-0'>{icon}</div>
 		<div>
 			<p className='text-xs text-gray-500 uppercase tracking-wide'>{label}</p>
-			<p className='text-gray-800 font-medium text-sm break-words'>{value}</p>
+			<p className='text-gray-800 font-medium text-sm break-words'>
+				{value || 'Kiritilmagan'}
+			</p>
 		</div>
 	</div>
 )
@@ -235,7 +273,8 @@ const EditableField = ({ icon, label, name, value, onChange }) => (
 			</p>
 			<input
 				name={name}
-				value={value}
+				// Qiymat null/undefined bo'lmasligi uchun bo'sh stringga o'tkazish
+				value={value || ''}
 				onChange={onChange}
 				className='w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400 outline-none transition-all'
 			/>
