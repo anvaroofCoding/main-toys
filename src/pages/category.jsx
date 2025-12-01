@@ -31,7 +31,7 @@ const Category = () => {
 	}
 
 	return (
-		<div className='py-10 pb-20 xl:container mx-auto'>
+		<div className='py-10 pb-20 xl:container mx-auto px-2'>
 			<h2 className='text-2xl md:text-3xl font-bold text-center mb-6 flex items-center justify-center gap-2 text-blue-600'>
 				<Shapes className='w-7 h-7 text-blue-500' />
 				Kategoriyalar
