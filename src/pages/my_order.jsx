@@ -13,7 +13,7 @@ import {
 	Package,
 	XCircle,
 } from 'lucide-react'
-import { toast, Toaster } from 'sonner'
+import { toast } from 'sonner'
 
 const MyOrder = () => {
 	const { data = [], isLoading } = useMyOrderQuery()
@@ -106,7 +106,6 @@ const MyOrder = () => {
 	console.log(data)
 	return (
 		<div className='min-h-screen bg-background pb-20'>
-			<Toaster position='top-center' richColors />
 			<div className='max-w-4xl mx-auto px-4 py-8 md:py-12 lg:py-16'>
 				<div className='mb-8 md:mb-12'>
 					<h1 className='text-3xl md:text-4xl font-semibold tracking-tight text-balance mb-2'>

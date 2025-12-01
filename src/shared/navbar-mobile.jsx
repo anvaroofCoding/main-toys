@@ -8,18 +8,31 @@ const MobileNavbar = () => {
 	const pathname = location.pathname
 
 	const { data, isLoading } = useGetCardProductsQuery()
+	const token = localStorage.getItem('access_token')
 
 	const navItems = [
-		{ name: 'Bosh sahifa', icon: Home, link: '/' },
-		{ name: 'Maxsulotlar', icon: ListOrdered, link: '/barcha-maxsulotlar' },
-		{ name: 'Kategoriyalar', icon: Search, link: '/sozlamalar' },
+		{ name: 'Bosh sahifa', icon: Home, link: `/?need_thing=${token}` },
+		{
+			name: 'Maxsulotlar',
+			icon: ListOrdered,
+			link: `/barcha-maxsulotlar?need_thing=${token}`,
+		},
+		{
+			name: 'Kategoriyalar',
+			icon: Search,
+			link: `/sozlamalar?need_thing=${token}`,
+		},
 		{
 			name: 'Buyurtmalar',
 			icon: ShoppingCart,
-			link: '/buyurtmalar',
+			link: `/buyurtmalar?need_thing=${token}`,
 			badge: isLoading ? 0 : data?.length || 0,
 		},
-		{ name: 'Profil', icon: User, link: '/shaxsiy-kabinet' },
+		{
+			name: token ? 'Profil' : 'Login',
+			icon: User,
+			link: token ? `/shaxsiy-kabinet?need_thing=${token}` : '/login',
+		},
 	]
 
 	return (

@@ -1,20 +1,46 @@
 import Profile from '@/pages/profile'
+import { RedoOutlined, RollbackOutlined, SendOutlined } from '@ant-design/icons'
 import { Button } from 'antd'
 import { useEffect, useRef, useState } from 'react'
-import { toast, Toaster } from 'sonner'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 
 const Login = () => {
 	const [rawPhone, setRawPhone] = useState('')
 	const [isVisible, setIsVisible] = useState(false)
-	const [load, SetLoad] = useState(false)
-	const [loc, Setloc] = useState(false)
+	const [load, setLoad] = useState(false)
+	const [loc, setLoc] = useState(false)
 	const length = 5
 	const [values, setValues] = useState(Array(length).fill(''))
 	const inputsRef = useRef([])
+	const [time, setTime] = useState(30)
+	const [startTimer, setStartTimer] = useState(false)
+	const navigate = useNavigate()
+	const token = localStorage.getItem('access_token')
 
 	useEffect(() => {
 		setIsVisible(true)
 	}, [])
+
+	useEffect(() => {
+		if (!startTimer) return
+		if (time <= 0) {
+			setStartTimer(false)
+			return
+		}
+
+		const timerId = setInterval(() => {
+			setTime(prev => prev - 1)
+		}, 1000)
+
+		return () => clearInterval(timerId)
+	}, [startTimer, time])
+
+	function formatTime(seconds) {
+		const mins = Math.floor(seconds / 60)
+		const secs = seconds % 60
+		return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+	}
 
 	const marsToysLetters = [
 		{ letter: 'M', color: 'text-blue-500' },
@@ -28,7 +54,6 @@ const Login = () => {
 		{ letter: 'S', color: 'text-green-500' },
 	]
 
-	// 📞 Telefon raqamini formatlash
 	const formatPhone = value => {
 		let formatted = ''
 		if (value.length > 0) formatted = '(' + value.substring(0, 2)
@@ -55,30 +80,45 @@ const Login = () => {
 		}
 	}
 
-	// ☎️ SMS yuborish
 	const SentNumber = async () => {
-		SetLoad(true)
+		setLoad(true)
 		try {
 			const res = await fetch('https://api.toysmars.uz/users/register/', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ phone_number: `998${rawPhone}` }),
 			})
-			if (res.status === 200) Setloc(true)
-			SetLoad(false)
+
+			if (res.status === 200) {
+				setLoc(true)
+				setTime(60)
+				setStartTimer(true)
+			} else {
+				toast.warning('Telefon raqam noto‘g‘ri yoki mavjud emas!')
+			}
+
+			setLoad(false)
 		} catch (err) {
 			console.error('❌ Xato:', err)
-			SetLoad(false)
+			toast.warning('Tarmoqqa ulanishda xato!')
+			setLoad(false)
 		}
 	}
 
-	// 🔢 Kod inputlari
 	const handleChanges = (e, index) => {
 		const val = e.target.value.replace(/\D/g, '')
 		const newValues = [...values]
 		newValues[index] = val.slice(-1)
 		setValues(newValues)
-		if (val && index < length - 1) inputsRef.current[index + 1].focus()
+
+		if (val && index < length - 1) {
+			inputsRef.current[index + 1].focus()
+		}
+
+		// Faqat oxirgi input to'ldirilganda yuborish
+		if (index === length - 1 && newValues.every(v => v !== '')) {
+			Handlecode(newValues)
+		}
 	}
 
 	const handleKeyDowns = (e, index) => {
@@ -91,25 +131,25 @@ const Login = () => {
 		}
 	}
 
-	const code = values.join('')
-	const loginDatas = { phone_number: `998${rawPhone}`, otp: code }
+	const Handlecode = async currentValues => {
+		const code = currentValues ? currentValues.join('') : values.join('')
+		const loginDatas = { phone_number: `998${rawPhone}`, otp: code }
 
-	const Handlecode = async () => {
 		try {
-			const res = await fetch(`https://api.toysmars.uz/users/login/`, {
+			const res = await fetch('https://api.toysmars.uz/users/login/', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(loginDatas),
 			})
 
 			if (!res.ok) throw new Error(`Login failed: ${res.status}`)
-			toast.success('Muvaffaqiyatli kirildi!')
 
 			const dataRes = await res.json()
 			localStorage.setItem('access_token', dataRes.access_token)
 			localStorage.setItem('refresh_token', dataRes.refresh_token)
 			localStorage.setItem('phone', loginDatas.phone_number)
-			window.location.pathname = '/'
+			toast.success('Muvaffaqiyatli kirildi!')
+			navigate(`/shaxsiy-kabinet?need_thing=${dataRes.access_token}`)
 		} catch (error) {
 			console.error('Login error:', error)
 			toast.warning('Kiritilgan kod xato!')
@@ -117,26 +157,28 @@ const Login = () => {
 	}
 
 	const tokens = localStorage.getItem('access_token')
-
-	if (tokens) {
-		return <Profile />
-	}
+	if (tokens) return <Profile />
 
 	return (
 		<div className='w-full h-screen flex justify-center items-center flex-col gap-2'>
-			<Toaster position='top-center' />
-
-			{/* 🔐 Login yoki OTP bo‘lim */}
+			<div className='absolute top-5 left-5'>
+				<Button
+					variant='solid'
+					color='orange'
+					onClick={() => navigate(`/?need_thing=${token}`)}
+				>
+					Qaytish <RollbackOutlined />
+				</Button>
+			</div>
 			<div
 				className={`flex-col items-center gap-2 ${tokens ? 'hidden' : 'flex'}`}
 			>
-				{/* 🌈 Logo */}
 				<div className='flex flex-col items-center justify-center px-6 text-center'>
 					<h1 className='text-5xl md:text-8xl font-bold mb-2 tracking-wider'>
 						{marsToysLetters.map((item, index) => (
 							<span
 								key={index}
-								className={`inline-block  ${
+								className={`inline-block ${
 									item.color
 								} transition-all duration-1000 ${
 									isVisible
@@ -154,7 +196,6 @@ const Login = () => {
 					</h1>
 				</div>
 
-				{/* 📱 Telefon raqam qismi */}
 				<div className={`${loc ? 'hidden' : 'flex flex-col gap-4'}`}>
 					<div className='flex items-center border-2 border-gray-200 rounded-2xl overflow-hidden w-full max-w-[300px] bg-white shadow-sm focus-within:border-blue-500 transition-all duration-200'>
 						<span className='px-3 py-2 text-gray-600 text-md font-medium border-r bg-gray-50'>
@@ -178,11 +219,10 @@ const Login = () => {
 						onClick={SentNumber}
 						loading={load}
 					>
-						Jo‘natish
+						Jo‘natish <SendOutlined />
 					</Button>
 				</div>
 
-				{/* 🔢 Kod kiritish qismi */}
 				<div className={`${loc ? 'flex' : 'hidden'} flex-col items-center`}>
 					<div className='flex justify-center gap-3 mb-5'>
 						{values.map((val, i) => (
@@ -201,30 +241,31 @@ const Login = () => {
 						))}
 					</div>
 
-					<Button
-						size='large'
-						type='primary'
-						className='mt-4 w-[300px] rounded-2xl shadow-md font-medium hover:scale-[1.02] transition-all duration-200'
-						onClick={Handlecode}
-						loading={load}
-					>
-						Tasdiqlash
-					</Button>
+					<p className='text-gray-500 '>
+						{time > 0 ? (
+							<span>Kodni tasdiqlash vaqti: {formatTime(time)}</span>
+						) : (
+							<Button
+								size='large'
+								type='primary'
+								className='mt-4 w-[300px] rounded-2xl shadow-md font-medium hover:scale-[1.02] transition-all duration-200'
+								onClick={SentNumber}
+								loading={load}
+							>
+								Qayta kod yuborish <RedoOutlined />
+							</Button>
+						)}
+					</p>
 				</div>
 			</div>
 
-			{/* 👤 Profil sahifasi */}
-			{/* <div className={` ${tokens ? 'block' : 'hidden'}`}>
-				<Profile />
-			</div> */}
-
 			<style>{`
-				@keyframes bounce {
-					0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-					40% { transform: translateY(-10px); }
-					60% { transform: translateY(-5px); }
-				}
-			`}</style>
+        @keyframes bounce {
+          0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+          40% { transform: translateY(-10px); }
+          60% { transform: translateY(-5px); }
+        }
+      `}</style>
 		</div>
 	)
 }

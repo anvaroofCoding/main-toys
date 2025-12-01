@@ -10,6 +10,8 @@ import {
 } from '@/service/api'
 import { Image } from 'antd'
 import {
+	ArrowRight,
+	Loader,
 	Loader2,
 	Minus,
 	Plus,
@@ -19,7 +21,7 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { toast, Toaster } from 'sonner'
+import { toast } from 'sonner'
 
 export default function Order() {
 	const { data = [], isLoading, refetch } = useGetCardProductsQuery()
@@ -42,8 +44,6 @@ export default function Order() {
 		)
 	}
 
-	console.log(data)
-	// Bo'sh savat
 	if (data.length === 0) {
 		return (
 			<div className='flex min-h-screen flex-col items-center justify-center px-4'>
@@ -62,12 +62,12 @@ export default function Order() {
 					<div className='flex xl:flex-row flex-col gap-3'>
 						<Link to='/barcha-maxsulotlar' className='text-white'>
 							<Button className='mt-4 bg-blue-500 hover:bg-blue-600'>
-								Xaridni davom etish
+								Xaridni davom etish <ArrowRight />
 							</Button>
 						</Link>
 						<Link to='/my-order' className='text-white'>
 							<Button className='mt-4 bg-orange-500 hover:bg-orange-600'>
-								Buyurtmalarni kuzatish
+								Buyurtmalarni kuzatish <ShoppingCart />
 							</Button>
 						</Link>
 					</div>
@@ -178,7 +178,6 @@ export default function Order() {
 
 	return (
 		<div className='min-h-screen bg-background pb-10'>
-			<Toaster position='top-center' richColors />
 			{/* Header */}
 			<div className='sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
 				<div className='mx-auto max-w-4xl px-4 py-4 sm:px-6'>
@@ -295,7 +294,11 @@ export default function Order() {
 											onClick={() => handleDeleteOne(item)}
 											className='h-8 w-8 rounded-full text-destructive hover:bg-destructive/10 hover:text-destructive'
 										>
-											<Trash2 className='h-4 w-4' />
+											{isDeleting ? (
+												<Loader className='h-4 w-4' />
+											) : (
+												<Trash2 className='h-4 w-4' />
+											)}
 										</Button>
 									</div>
 								</div>

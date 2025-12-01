@@ -1,8 +1,8 @@
 import { useGetMeQuery, useUpdateUserMutation } from '@/service/api'
+import { Skeleton } from 'antd'
 import {
 	Edit3,
 	Home,
-	Loader2,
 	LogOut,
 	MapPin,
 	Package,
@@ -12,7 +12,7 @@ import {
 	X,
 } from 'lucide-react'
 import { useState } from 'react'
-import { toast, Toaster } from 'sonner'
+import { toast } from 'sonner'
 
 const Profile = () => {
 	const [load, setLoad] = useState(false)
@@ -31,7 +31,7 @@ const Profile = () => {
 		setTimeout(() => {
 			localStorage.clear()
 			toast.success('Muvaffaqiyatli chiqildi!')
-			window.location.pathname = '/'
+			window.location.pathname = '/login'
 			setLoad(false)
 		}, 1500)
 	}
@@ -65,10 +65,28 @@ const Profile = () => {
 
 	if (load || isLoading) {
 		return (
-			<div className='flex min-h-screen items-center justify-center bg-background'>
-				<div className='flex flex-col items-center gap-3'>
-					<Loader2 className='h-8 w-8 animate-spin text-blue-500' />
-					<p className='text-sm text-muted-foreground'>Yuklanmoqda...</p>
+			<div className='w-full h-screen flex items-start justify-center bg-white'>
+				<div className='w-full h-full max-w-lg px-4 py-6 space-y-4'>
+					{/* Header skeleton */}
+					<div className='flex flex-col items-center gap-3 pb-4'>
+						<Skeleton.Avatar active size={80} />
+						<Skeleton.Input active size='small' style={{ width: 180 }} />
+					</div>
+
+					{/* Body skeleton fields */}
+					<div className='space-y-3'>
+						<Skeleton.Input active block size='large' style={{ height: 55 }} />
+						<Skeleton.Input active block size='large' style={{ height: 55 }} />
+						<Skeleton.Input active block size='large' style={{ height: 55 }} />
+						<Skeleton.Input active block size='large' style={{ height: 55 }} />
+					</div>
+
+					{/* Action buttons */}
+					<div className='pt-4 space-y-3'>
+						<Skeleton.Button active block size='large' style={{ height: 45 }} />
+						<Skeleton.Button active block size='large' style={{ height: 45 }} />
+						<Skeleton.Button active block size='large' style={{ height: 45 }} />
+					</div>
 				</div>
 			</div>
 		)
@@ -76,8 +94,6 @@ const Profile = () => {
 
 	return (
 		<div className='w-full h-screen flex items-start justify-center overflow-hidden bg-white'>
-			<Toaster position='top-center' />
-
 			<div className='w-full h-full max-w-lg   shadow-[0_10px_40px_rgba(0,0,0,0.1)] overflow-hiddentransition-all '>
 				{/* Header */}
 				<div className='relative bg-blue-600 text-white pt-3 px-6 flex flex-col items-center justify-center rounded-b-4xl shadow-md'>
@@ -97,14 +113,14 @@ const Profile = () => {
 								icon={<User className='text-blue-600 w-4 h-4' />}
 								label='Ism'
 								name='first_name'
-								value={formData?.first_name}
+								value={data?.first_name}
 								onChange={handleChange}
 							/>
 							<EditableField
 								icon={<User className='text-blue-600 w-4 h-4' />}
 								label='Familiya'
 								name='last_name'
-								value={formData?.last_name}
+								value={data?.last_name}
 								onChange={handleChange}
 							/>
 							<EditableField
@@ -112,8 +128,8 @@ const Profile = () => {
 								label='Telefon raqam'
 								name='phone_number'
 								value={
-									formData?.phone_number
-										? formData.phone_number
+									data?.phone_number
+										? data.phone_number
 										: '+' + localStorage.getItem('phone')
 								}
 								onChange={handleChange}
@@ -122,11 +138,11 @@ const Profile = () => {
 								icon={<MapPin className='text-blue-600 w-4 h-4' />}
 								label='Manzil'
 								name='address'
-								value={formData.address}
+								value={data.address}
 								onChange={handleChange}
 							/>
 
-							<div className='flex gap-3 pt-4'>
+							<div className='flex gap-3 pt-4 text-white'>
 								<button
 									onClick={handleSave}
 									disabled={isUpdating}
@@ -141,7 +157,7 @@ const Profile = () => {
 								</button>
 								<button
 									onClick={() => setIsEditing(false)}
-									className='flex-1 flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2.5 rounded-xl text-sm font-medium border transition-all'
+									className='flex-1 flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2.5 rounded-xl text-sm font-medium border transition-all'
 								>
 									<X size={16} />
 									Bekor qilish

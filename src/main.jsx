@@ -14,6 +14,7 @@ import Home from './pages/home'
 import MyOrder from './pages/my_order'
 import Order from './pages/order'
 import ProductDetails from './pages/product-details'
+import Profile from './pages/profile'
 
 createRoot(document.getElementById('root')).render(
 	<StrictMode>
@@ -24,7 +25,6 @@ createRoot(document.getElementById('root')).render(
 						<Route path='/' element={<Home />} />
 						<Route path='/barcha-maxsulotlar' element={<Allp />} />
 						<Route path='/buyurtmalar' element={<Order />} />
-						<Route path='/shaxsiy-kabinet' element={<Login />} />
 						<Route
 							path='/buyurtmalar/product/:id'
 							element={<ProductDetails />}
@@ -32,7 +32,9 @@ createRoot(document.getElementById('root')).render(
 						<Route path='/checkout' element={<Checkout />} />
 						<Route path='/my-order' element={<MyOrder />} />
 						<Route path='/sozlamalar' element={<Category />} />
+						<Route path='/shaxsiy-kabinet' element={<Profile />} />
 					</Route>
+					<Route path='/login' element={<Login />} />
 				</Routes>
 			</BrowserRouter>
 		</Provider>

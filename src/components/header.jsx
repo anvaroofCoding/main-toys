@@ -1,9 +1,11 @@
 import { Instagram, Send, Youtube } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import SButton from './Cbutton'
 
 export default function Header() {
 	const [isVisible, setIsVisible] = useState(false)
+	const token = localStorage.getItem('access_token')
 
 	useEffect(() => {
 		setIsVisible(true)
@@ -51,7 +53,7 @@ export default function Header() {
 			/>
 
 			{/* Dark overlay for better text readability */}
-			<div className='absolute inset-0 bg-black/60 md:bg-black/50' />
+			<div className='absolute inset-0 bg-black/60 md:bg-black/70' />
 
 			<div className='absolute inset-0 pointer-events-none'>
 				<div className='absolute top-10 md:top-20 left-5 md:left-10 w-40 md:w-64 h-40 md:h-64 bg-gradient-to-r from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse' />
@@ -75,8 +77,8 @@ export default function Header() {
 
 			{/* Main content */}
 			<div className='relative z-10 flex flex-col items-center justify-center min-h-screen px-4 md:px-6 text-center'>
-				<div className='mb-6 md:mb-8'>
-					<h1 className='text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold mb-4 tracking-wider text-balance'>
+				<div className='mb-6 md:mb-5'>
+					<h1 className='text-5xl sm:text-5xl md:text-7xl lg:text-8xl font-bold mb-4 tracking-wider text-balance'>
 						{marsToysLetters.map((item, index) => (
 							<span
 								key={index}
@@ -104,10 +106,10 @@ export default function Header() {
 								: 'translate-y-10 opacity-0'
 						}`}
 					>
-						<p className='text-base md:text-xl lg:text-2xl text-gray-200 font-light mb-3'>
+						<p className='text-xl md:text-xl lg:text-3xl text-gray-200 font-bold '>
 							Eng so'nggi o'yinchoqlar
 						</p>
-						<div className='w-16 md:w-24 h-1 bg-gradient-to-r from-blue-500 to-blue-300 mx-auto rounded-full' />
+						<div className='w-50 md:w-44 h-1 bg-gradient-to-r from-blue-500 to-blue-300 mx-auto rounded-full' />
 					</div>
 				</div>
 
@@ -117,7 +119,7 @@ export default function Header() {
 					}`}
 					style={{ transitionDelay: '400ms' }}
 				>
-					<p className='text-sm md:text-base lg:text-lg text-gray-200 leading-relaxed md:leading-relaxed text-balance'>
+					<p className='text-sm md:text-base lg:text-md text-gray-200 leading-relaxed md:leading-relaxed text-balance mono'>
 						Eng so'nggi o'yinchoqlar – ulgurji narxlarda. Bugun buyurtma bering
 						– ertaga do'koningizda! MarsToys – savdogarlar uchun qulay
 						platforma.
@@ -125,16 +127,18 @@ export default function Header() {
 				</div>
 
 				<div
-					className={`flex flex-col sm:flex-row gap-3 md:gap-4 transform transition-all duration-1000 mt-8 md:mt-10 ${
+					className={`flex flex-col sm:flex-row gap-3 md:gap-4 transform transition-all duration-1000 ${
 						isVisible ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'
 					}`}
 					style={{ transitionDelay: '500ms' }}
 				>
-					<SButton />
+					<Link to={`/barcha-maxsulotlar?need_thing=${token}`}>
+						<SButton />
+					</Link>
 				</div>
 
 				<div
-					className={`flex gap-4 md:gap-6 mt-10 md:mt-12 transform transition-all duration-1000 ${
+					className={`flex gap-4 md:gap-6 mt-5 transform transition-all duration-1000 ${
 						isVisible ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'
 					}`}
 					style={{ transitionDelay: '600ms' }}

@@ -13,7 +13,7 @@ import {
 import { Image } from 'antd'
 import { CreditCard, Loader2, MapPin, ShoppingBag, User } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Toaster, toast } from 'react-hot-toast'
+import { toast } from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 
 const Checkout = () => {
@@ -109,19 +109,6 @@ const Checkout = () => {
 
 	return (
 		<div className='min-h-screen pb-30 bg-gradient-to-b from-gray-50 to-white py-8 px-4 sm:px-6 lg:px-8'>
-			<Toaster
-				position='top-center'
-				toastOptions={{
-					duration: 3000,
-					style: {
-						background: '#fff',
-						color: '#000',
-						borderRadius: '12px',
-						padding: '16px',
-					},
-				}}
-			/>
-
 			<div className='mx-auto max-w-3xl'>
 				{/* Header */}
 				<div className='mb-8 text-center'>

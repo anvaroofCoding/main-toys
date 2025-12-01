@@ -6,6 +6,7 @@ import { Link, useLocation } from 'react-router-dom'
 const Navbar = () => {
 	const { pathname } = useLocation()
 	const { data, isLoading } = useGetCardProductsQuery()
+	const token = localStorage.getItem('access_token')
 
 	const navItems = [
 		{ name: 'Bosh sahifa', icon: House, link: '/' },
@@ -17,7 +18,11 @@ const Navbar = () => {
 			link: '/buyurtmalar',
 			badge: isLoading ? '' : data?.length,
 		},
-		{ name: 'Profil', icon: User, link: '/shaxsiy-kabinet' },
+		{
+			name: token ? 'Profil' : 'Login',
+			icon: User,
+			link: token ? '/shaxsiy-kabinet' : '/login',
+		},
 	]
 
 	return (

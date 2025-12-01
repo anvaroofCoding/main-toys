@@ -4,10 +4,20 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 const baseQuery = fetchBaseQuery({
 	baseUrl: 'https://api.toysmars.uz',
 	prepareHeaders: headers => {
-		const token = localStorage.getItem('access_token')
-		if (token) {
-			headers.set('Authorization', `Bearer ${token}`)
+		// 1. URL dagi tokenni olish
+		const urlParams = new URLSearchParams(window.location.search)
+		const urlToken = urlParams.get('access_token')
+
+		// 2. Agar URLda bo'lmasa – localStoragedan olish
+		const localToken = localStorage.getItem('access_token')
+
+		const finalToken = urlToken || localToken
+
+		// 3. Headerga qo'yish
+		if (finalToken) {
+			headers.set('Authorization', `Bearer ${finalToken}`)
 		}
+
 		return headers
 	},
 })
