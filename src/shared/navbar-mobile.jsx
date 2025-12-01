@@ -39,7 +39,8 @@ const MobileNavbar = () => {
 		<nav className='fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md shadow-[0_-1px_10px_rgba(0,0,0,0.1)] border-t border-gray-100'>
 			<ul className='flex justify-around items-center pt-3'>
 				{navItems.map(item => {
-					const isActive = pathname === item.link
+					// 🔥 ACTIVE ROUTE FIX (MUHIM QISM)
+					const isActive = pathname === item.link.split('?')[0]
 					const Icon = item.icon
 
 					return (
@@ -47,13 +48,12 @@ const MobileNavbar = () => {
 							key={item.name}
 							to={item.link}
 							onClick={() => {
-								if (item.link === '/barcha-maxsulotlar') {
+								if (item.link.startsWith('/barcha-maxsulotlar')) {
 									localStorage.removeItem('selectedCategory')
 								}
 							}}
 							className='relative flex flex-col items-center justify-center text-xs text-gray-500 transition-all duration-200'
 						>
-							{/* Animatsiya effekti */}
 							<motion.div
 								whileTap={{ scale: 0.9 }}
 								className='relative flex flex-col items-center'
@@ -64,7 +64,6 @@ const MobileNavbar = () => {
 									}`}
 								/>
 
-								{/* Badge */}
 								{item.badge > 0 && (
 									<span className='absolute -top-1.5 -right-2 bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full shadow-md'>
 										{item.badge}
@@ -72,7 +71,6 @@ const MobileNavbar = () => {
 								)}
 							</motion.div>
 
-							{/* Label */}
 							<span
 								className={`mt-1 font-medium ${
 									isActive ? 'text-blue-600' : 'text-gray-500'
@@ -81,7 +79,6 @@ const MobileNavbar = () => {
 								{item.name}
 							</span>
 
-							{/* Aktive indikator */}
 							{isActive && (
 								<motion.div
 									layoutId='navbar-indicator'

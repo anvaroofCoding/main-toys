@@ -8,12 +8,14 @@ const DesktopNavbar = () => {
 	const navigate = useNavigate()
 	const pathname = location.pathname
 	const { data, isLoading } = useGetCardProductsQuery()
+
+	const token = localStorage.getItem('access_token')
+
 	const handleClick = () => {
-		navigate('/barcha-maxsulotlar?need_thing=${token}', {
+		navigate(`/barcha-maxsulotlar?need_thing=${token}`, {
 			state: { openSearch: true },
 		})
 	}
-	const token = localStorage.getItem('access_token')
 
 	const navItems = [
 		{ name: 'Bosh sahifa', icon: Home, link: `/?need_thing=${token}` },
@@ -41,10 +43,11 @@ const DesktopNavbar = () => {
 	]
 
 	return (
-		<ul className='fixed top-0 left-0 right-0 z-50 bg-white/95 flex justify-center items-center gap-4 h-20 '>
+		<ul className='fixed top-0 left-0 right-0 z-50 bg-white/95 flex justify-center items-center gap-4 h-20'>
 			<div className='flex items-center gap-3 w-full max-w-[900px] justify-center'>
 				{navItems.map((item, index) => {
-					const isActive = pathname === item.link
+					// 🔥 ACTIVE FIX
+					const isActive = pathname === item.link.split('?')[0]
 					const Icon = item.icon
 
 					return (
@@ -67,16 +70,14 @@ const DesktopNavbar = () => {
 									<motion.div
 										animate={
 											isActive
-												? {
-														scale: [1, 1.2, 1],
-														rotate: [0, 5, -5, 0],
-												  }
+												? { scale: [1, 1.2, 1], rotate: [0, 5, -5, 0] }
 												: {}
 										}
 										transition={{ duration: 0.5 }}
 										className='relative'
 									>
 										<Icon className='w-5 h-5' />
+
 										{item.badge > 0 && (
 											<motion.span
 												initial={{ scale: 0 }}
@@ -117,7 +118,7 @@ const DesktopNavbar = () => {
 					)
 				})}
 
-				{/* Search button — o‘ng tomonda */}
+				{/* Search button */}
 				<motion.div
 					initial={{ opacity: 0, x: 20 }}
 					animate={{ opacity: 1, x: 0 }}
