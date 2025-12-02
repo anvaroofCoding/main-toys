@@ -11,27 +11,27 @@ const MobileNavbar = () => {
 	const token = localStorage.getItem('access_token')
 
 	const navItems = [
-		{ name: 'Bosh sahifa', icon: Home, link: `/?need_thing=${token}` },
+		{ name: 'Bosh sahifa', icon: Home, link: `/` },
 		{
 			name: 'Maxsulotlar',
 			icon: ListOrdered,
-			link: `/barcha-maxsulotlar?need_thing=${token}`,
+			link: `/barcha-maxsulotlar`,
 		},
 		{
 			name: 'Kategoriyalar',
 			icon: Search,
-			link: `/sozlamalar?need_thing=${token}`,
+			link: `/sozlamalar`,
 		},
 		{
 			name: 'Buyurtmalar',
 			icon: ShoppingCart,
-			link: `/buyurtmalar?need_thing=${token}`,
+			link: `/buyurtmalar`,
 			badge: isLoading ? 0 : data?.length || 0,
 		},
 		{
 			name: token ? 'Profil' : 'Login',
 			icon: User,
-			link: token ? `/shaxsiy-kabinet?need_thing=${token}` : '/login',
+			link: token ? `/shaxsiy-kabinet` : '/login',
 		},
 	]
 

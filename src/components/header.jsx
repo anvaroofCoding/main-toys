@@ -122,7 +122,7 @@ export default function Header() {
 					}`}
 					style={{ transitionDelay: '550ms' }}
 				>
-					<Link to={`/barcha-maxsulotlar?need_thing=${token}`}>
+					<Link to={`/barcha-maxsulotlar`}>
 						<SButton />
 					</Link>
 				</div>
