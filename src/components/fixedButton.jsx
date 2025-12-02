@@ -10,7 +10,7 @@ const FloatingActionMenu = () => {
 	const token = localStorage.getItem('access_token')
 
 	const handleSearchClick = () => {
-		navigate(`/barcha-maxsulotlar`, {
+		navigate(`/barcha-maxsulotlar?need_thing=${token}`, {
 			state: { openSearch: true },
 		})
 		setOpen(false)

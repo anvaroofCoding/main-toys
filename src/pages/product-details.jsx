@@ -225,7 +225,7 @@ export default function ProductDetails() {
 		<div className='min-h-screen bg-background pb-20'>
 			<div className='sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b'>
 				<div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4'>
-					<Link to={`/barcha-maxsulotlar`}>
+					<Link to={`/barcha-maxsulotlar?need_thing=${token}`}>
 						<Button
 							variant='ghost'
 							size='icon'

@@ -149,7 +149,7 @@ const Login = () => {
 			localStorage.setItem('refresh_token', dataRes.refresh_token)
 			localStorage.setItem('phone', loginDatas.phone_number)
 			toast.success('Muvaffaqiyatli kirildi!')
-			navigate(`/shaxsiy-kabinet`)
+			navigate(`/shaxsiy-kabinet?need_thing=${dataRes.access_token}`)
 		} catch (error) {
 			console.error('Login error:', error)
 			toast.warning('Kiritilgan kod xato!')
@@ -166,7 +166,7 @@ const Login = () => {
 				<Button
 					variant='solid'
 					color='orange'
-					onClick={() => navigate(`/`)}
+					onClick={() => navigate(`/?need_thing=${token}`)}
 				>
 					Qaytish <RollbackOutlined />
 				</Button>

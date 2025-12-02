@@ -7,10 +7,6 @@ import { Link } from 'react-router-dom'
 import Header from '../components/header'
 
 const Home = () => {
-
-		
-
-
 	const token = localStorage.getItem('access_token')
 	return (
 		<div className=''>
@@ -31,7 +27,7 @@ const Home = () => {
 				</motion.div>
 				<NewProducts />
 				<div className='w-full text-center my-10'>
-					<Link to={`/barcha-maxsulotlar`}>
+					<Link to={`/barcha-maxsulotlar?need_thing=${token}`}>
 						<SButton />
 					</Link>
 				</div>
