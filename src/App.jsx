@@ -6,6 +6,12 @@ import Footer from './shared/footer'
 import ResponsiveNavbar from './shared/navbar-responsive'
 
 const App = () => {
+
+	const urlParams = new URLSearchParams(window.location.search);
+	const tokenFromUrl = urlParams.get("need_thing");
+	if (tokenFromUrl) {
+    localStorage.setItem("access_token", tokenFromUrl);
+}
 	const [toastPosition, setToastPosition] = useState('bottom-right')
 
 	useEffect(() => {
