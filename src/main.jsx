@@ -6,6 +6,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import App from './App'
 import { store } from './app/store'
 import Login from './auth/login'
+import ScrollToTop from './components/scrolloTop'
 import './index.css'
 import Allp from './pages/Allp'
 import Category from './pages/category'
@@ -20,6 +21,7 @@ createRoot(document.getElementById('root')).render(
 	<StrictMode>
 		<Provider store={store}>
 			<BrowserRouter>
+				<ScrollToTop />
 				<Routes>
 					<Route path='/' element={<App />}>
 						<Route path='/' element={<Home />} />
