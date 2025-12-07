@@ -125,6 +125,8 @@ export default function QuantityControl({
 					min='1'
 					max={maxQuantity}
 					className='w-16 text-center'
+					inputMode='numeric' // faqat raqamli klaviatura
+					pattern='[0-9]*' // sonlarni kiritishga majbur qiladi
 				/>
 
 				<Button

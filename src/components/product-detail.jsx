@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { useGetCardProductsQuery, useProductsDetailQuery } from '@/service/api'
 import { Skeleton } from 'antd'
-import { ShoppingBagIcon, Star } from 'lucide-react'
+import { ArrowLeft, ShoppingBagIcon, Star } from 'lucide-react'
 import { useState } from 'react'
 import ImageCarousel from './image-carousel'
 import QuantityControl from './quantity-control'
@@ -64,7 +64,12 @@ export default function ProductDetail({ id }) {
 		<div className='w-full px-4 py-8 md:px-8'>
 			<div className='mx-auto grid grid-cols-1 gap-8 md:grid-cols-2 lg:gap-12'>
 				{/* Image Gallery */}
-				<div className='flex flex-col gap-4'>
+				<div className='flex flex-col gap-4 relative'>
+					<div className='absolute z-10 mt-2 text-white ml-2'>
+						<Button className={'bg-blue-600/60 '}>
+							<ArrowLeft />
+						</Button>
+					</div>
 					<ImageCarousel images={product.images} productName={product.name} />
 				</div>
 
