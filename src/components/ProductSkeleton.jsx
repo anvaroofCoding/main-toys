@@ -8,8 +8,8 @@ const ProductSkeleton = () => {
 
 			<div className='p-3'>
 				<Skeleton active title={false} paragraph={{ rows: 2 }} />
-				<div className='mt-3 flex items-center justify-between'>
-					<Skeleton.Button active style={{ width: 130 }} />
+				<div className='mt-3 flex items-center justify-between '>
+					<Skeleton.Button active style={{ width: 110 }} />
 					<Skeleton.Button active shape='circle' size='middle' />
 				</div>
 			</div>
