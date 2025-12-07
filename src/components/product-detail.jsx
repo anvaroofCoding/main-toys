@@ -3,10 +3,12 @@ import { useGetCardProductsQuery, useProductsDetailQuery } from '@/service/api'
 import { Skeleton } from 'antd'
 import { ArrowLeft, ShoppingBagIcon, Star } from 'lucide-react'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import ImageCarousel from './image-carousel'
 import QuantityControl from './quantity-control'
 
 export default function ProductDetail({ id }) {
+	const navigate = useNavigate()
 	const [quantity, setQuantity] = useState(1)
 	const { data: product, isLoading } = useProductsDetailQuery(id)
 	const { data, isLoading: money } = useGetCardProductsQuery()
@@ -17,10 +19,14 @@ export default function ProductDetail({ id }) {
 			console.log('Quantity updated:', newQuantity)
 		}
 	}
+	const findedElements = data?.find(items => {
+		return items?.product_id == product?.id
+	})
+	console.log(findedElements)
 
 	if (isLoading || money) {
 		return (
-			<div className='w-full'>
+			<div className='container'>
 				<div className='px-4 py-8 md:px-8'>
 					<div className='grid grid-cols-1 gap-8 md:grid-cols-2 lg:gap-12'>
 						{/* Image skeleton */}
@@ -61,7 +67,7 @@ export default function ProductDetail({ id }) {
 	}
 
 	return (
-		<div className='w-full px-4 py-8 md:px-8'>
+		<div className='w-full py-5 container'>
 			<div className='mx-auto grid grid-cols-1 gap-8 md:grid-cols-2 lg:gap-12'>
 				{/* Image Gallery */}
 				<div className='flex flex-col gap-4 relative'>
@@ -77,12 +83,14 @@ export default function ProductDetail({ id }) {
 				<div className='flex flex-col gap-6'>
 					{/* Category and Rating */}
 					<div className='flex items-center gap-4'>
-						<span className='inline-block bg-muted px-3 py-1 rounded-full text-sm font-medium'>
+						<span className='inline-block bg-muted  py-1 rounded-full text-sm font-medium'>
 							{product.category}
 						</span>
-						<div className='flex items-center gap-1'>
-							<Star className='w-4 h-4 fill-yellow-400 text-yellow-400' />
-							<span className='font-semibold'>{product.average_rating}</span>
+						<div className='flex items-center md:flex-row flex-col gap-1'>
+							<span className='font-semibold flex gap-1'>
+								<Star className='w-4 h-4 fill-yellow-400 text-yellow-400' />{' '}
+								{product.average_rating}
+							</span>
 							<span className='text-sm text-muted-foreground'>
 								({product.sold_count} ta sotilgan)
 							</span>
@@ -148,13 +156,23 @@ export default function ProductDetail({ id }) {
 
 						{/* Add to Cart Button */}
 						<div className='text-white'>
-							<Button
-								size='lg'
-								className='w-full text-white'
-								disabled={product.quantity === 0}
-							>
-								Savatchaga qo'shish <ShoppingBagIcon />
-							</Button>
+							{findedElements ? (
+								<Button
+									size='lg'
+									className='w-full bg-orange-500 hover:bg-orange-600 text-white'
+									onClick={() => navigate('/buyurtmalar')}
+								>
+									Savatga o'tish <ShoppingBagIcon />
+								</Button>
+							) : (
+								<Button
+									size='lg'
+									className='w-full text-white'
+									disabled={product.quantity === 0}
+								>
+									Savatchaga qo'shish <ShoppingBagIcon />
+								</Button>
+							)}
 						</div>
 
 						{/* Additional Info */}

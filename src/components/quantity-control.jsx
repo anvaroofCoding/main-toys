@@ -1,5 +1,5 @@
-import { useAddQuantityMutation } from '@/service/api'
-import { Minus, Plus } from 'lucide-react'
+import { useAddQuantityMutation, useUpdateCardMutation } from '@/service/api'
+import { Loader, Minus, Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from './ui/button'
@@ -24,46 +24,34 @@ export default function QuantityControl({
 	const [confirmOpen, setConfirmOpen] = useState(false)
 	const [typingTimeout, setTypingTimeout] = useState(null)
 	const [value, setValue] = useState(0)
-	console.log(value)
+	const [filterData, setFilterData] = useState('')
+	const [minusLoad, setMinusLoad] = useState(null)
+	const [plusLoad, setplusLoad] = useState(null)
 
 	const [addQuantity, { isLoading }] = useAddQuantityMutation()
-	console.log(maxQuantity)
-	console.log(data)
-
+	const [editCard] = useUpdateCardMutation()
 	// ❗ Shu limitdan katta yoki teng bo‘lsa modal ochiladi
 	const LIMIT_FOR_CONFIRM = 1
 
 	const filteredData = data?.find(item => {
-		return item?.product_id == id
+		const sum = item?.product_id == id
+		return sum
 	})
 	useEffect(() => {
-		if (!value) return
+		setFilterData(filteredData?.quantity)
+	}, [filteredData])
 
-		const numValue = Number.parseInt(value, 10)
+	useEffect(() => {
+		if (!filterData) return
+		const numValue = Number.parseInt(filterData, 10)
 		if (isNaN(numValue) || numValue <= 0) return
-
-		// Max quantity check
 		if (numValue > maxQuantity) {
 			toast.warning(`Omborda faqat ${maxQuantity} ta bor`)
-			return
-		}
-		if (filteredData?.quantity == maxQuantity) {
-			toast.error(
-				`Siz ${maxQuantity} dona ombordagi barchasini xarid qildingiz!`
-			)
+			setPendingValue(maxQuantity)
+			setConfirmOpen(true)
 		} else {
 			const timer = setTimeout(() => {
-				if (filteredData) {
-					if (filteredData?.quantity + numValue == maxQuantity) {
-						setPendingValue(numValue)
-						setConfirmOpen(true)
-					} else {
-						const hisobKitob = maxQuantity - filteredData?.quantity
-						toast.warning(
-							`Siz oldin ${filteredData?.quantity} dona xarid qilgansiz. Yana ${hisobKitob} dona xarid qilishingiz mumkin`
-						)
-					}
-				} else if (numValue >= LIMIT_FOR_CONFIRM) {
+				if (numValue >= LIMIT_FOR_CONFIRM) {
 					setPendingValue(numValue)
 					setConfirmOpen(true)
 				}
@@ -72,11 +60,9 @@ export default function QuantityControl({
 		}
 	}, [value, maxQuantity])
 
-	console.log(pendingValue)
-
 	const handleConfirm = async () => {
 		onQuantityChange(pendingValue)
-		await addQuantity({ product_id: id, quantity: pendingValue })
+		await editCard({ cart_id: filteredData?.id, quantity: pendingValue })
 		setInputValue(String(pendingValue))
 		setConfirmOpen(false)
 		setPendingValue(null)
@@ -88,19 +74,15 @@ export default function QuantityControl({
 		setPendingValue(null)
 	}
 
-	const handleDecrease = () => {
-		if (quantity > 1) {
-			const newQuantity = quantity - 1
-			setInputValue(String(newQuantity))
-			onQuantityChange(newQuantity)
-		}
+	const handleDecrease = async () => {
+		await addQuantity({ product_id: id, quantity: -1 })
 	}
 
-	const handleIncrease = () => {
-		if (quantity < maxQuantity) {
-			const newQuantity = quantity + 1
-			setInputValue(String(newQuantity))
-			onQuantityChange(newQuantity)
+	const handleIncrease = async () => {
+		if (filteredData?.quantity > maxQuantity) {
+			toast.warning('Omborda boshqa qolmadi!')
+		} else {
+			await addQuantity({ product_id: id, quantity: 1 })
 		}
 	}
 
@@ -111,20 +93,25 @@ export default function QuantityControl({
 					variant='outline'
 					size='icon'
 					onClick={handleDecrease}
-					disabled={quantity <= 1}
+					disabled={data?.quantity <= 1}
 				>
-					<Minus className='w-4 h-4' />
+					{isLoading ? (
+						<Loader className='w-4 h-4 ' />
+					) : (
+						<Minus className='w-4 h-4' />
+					)}
 				</Button>
 
 				<Input
 					type='number'
-					value={value}
+					value={filterData ? filterData : 1}
 					onChange={e => {
+						setFilterData(e.target.value)
 						setValue(e.target.value)
 					}}
 					min='1'
 					max={maxQuantity}
-					className='w-16 text-center'
+					className='w-16 text-center border-1 border-gray-200'
 					inputMode='numeric' // faqat raqamli klaviatura
 					pattern='[0-9]*' // sonlarni kiritishga majbur qiladi
 				/>
@@ -135,7 +122,11 @@ export default function QuantityControl({
 					onClick={handleIncrease}
 					disabled={quantity >= maxQuantity}
 				>
-					<Plus className='w-4 h-4' />
+					{isLoading ? (
+						<Loader className='w-4 h-4 ' />
+					) : (
+						<Plus className='w-4 h-4' />
+					)}
 				</Button>
 
 				<span className='text-sm text-muted-foreground ml-2'>
@@ -168,7 +159,9 @@ export default function QuantityControl({
 						>
 							Yo‘q
 						</Button>
-						<Button onClick={handleConfirm}>Ha, tasdiqlayman</Button>
+						<Button onClick={handleConfirm} disabled={isLoading}>
+							{isLoading ? 'Tastiqlanmoqda...' : 'Ha, tastiqlayman'}
+						</Button>
 					</DialogFooter>
 				</DialogContent>
 			</Dialog>

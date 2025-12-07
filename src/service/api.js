@@ -154,10 +154,19 @@ export const api = createApi({
 			query: id => `/shop/product-comments/${id}/`,
 			providesTags: ['Posts'],
 		}),
+		updateCard: builder.mutation({
+			query: updatedData => ({
+				url: `/shop/update-cart-product/`,
+				method: 'PUT',
+				body: updatedData,
+			}),
+			invalidatesTags: ['Posts'],
+		}),
 	}),
 })
 
 export const {
+	useUpdateCardMutation,
 	useGetCommentQuery,
 	useAddCommentMutation,
 	useClickLinkMutation,
