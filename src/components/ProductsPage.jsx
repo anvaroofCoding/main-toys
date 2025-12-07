@@ -1,6 +1,7 @@
 import { Skeleton } from '@/components/ui/skeleton'
 import { motion } from 'framer-motion'
 import {
+	Ban,
 	Check,
 	ChevronLeft,
 	ChevronRight,
@@ -11,6 +12,7 @@ import {
 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 import {
 	useAddQuantityMutation,
 	useCategoriyesQuery,
@@ -238,29 +240,44 @@ const ProductsPage = () => {
 											</div>
 
 											{/* 🛒 CART BUTTON */}
-											{isInCart ? (
-												<button className='flex items-center justify-center w-9 h-9 rounded-full bg-green-500 transition'>
-													<Check className='w-5 h-5 text-white' />
+											{product?.quantity == 0 ? (
+												<button
+													onClick={() =>
+														toast.info(
+															"Omborda bu tavarda qolmagan olib keltirish uchun bizga bog'laning"
+														)
+													}
+													className='flex items-center justify-center w-9 h-9 rounded-full bg-orange-500 transition'
+												>
+													<Ban className='w-5 h-5 text-white' />
 												</button>
 											) : (
-												<button
-													onClick={e => {
-														e.stopPropagation()
-														handleAddToCart(product)
-													}}
-													disabled={loads && activeId === product.id}
-													className={`flex items-center justify-center w-9 h-9 rounded-full transition ${
-														loads && activeId === product.id
-															? 'bg-gray-300'
-															: 'bg-blue-500 hover:bg-blue-600 active:scale-95'
-													}`}
-												>
-													{loads && activeId === product.id ? (
-														<div className='animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full'></div>
+												<>
+													{isInCart ? (
+														<button className='flex items-center justify-center w-9 h-9 rounded-full bg-green-500 transition'>
+															<Check className='w-5 h-5 text-white' />
+														</button>
 													) : (
-														<ShoppingCart className='w-5 h-5 text-white' />
+														<button
+															onClick={e => {
+																e.stopPropagation()
+																handleAddToCart(product)
+															}}
+															disabled={loads && activeId === product.id}
+															className={`flex items-center justify-center w-9 h-9 rounded-full transition ${
+																loads && activeId === product.id
+																	? 'bg-gray-300'
+																	: 'bg-blue-500 hover:bg-blue-600 active:scale-95'
+															}`}
+														>
+															{loads && activeId === product.id ? (
+																<div className='animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full'></div>
+															) : (
+																<ShoppingCart className='w-5 h-5 text-white' />
+															)}
+														</button>
 													)}
-												</button>
+												</>
 											)}
 										</div>
 									</div>
