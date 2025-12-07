@@ -49,10 +49,11 @@ const baseQueryWithAuth = async (args, api, extraOptions) => {
 export const api = createApi({
 	reducerPath: 'api',
 	baseQuery: baseQueryWithAuth,
-	tagTypes: ['Posts', 'Post'],
+	tagTypes: ['Posts'],
 	endpoints: builder => ({
 		NewProductsGet: builder.query({
 			query: () => '/shop/new-products/',
+			providesTags: ['Posts'],
 		}),
 		addPost: builder.mutation({
 			query: newPost => ({
@@ -60,18 +61,19 @@ export const api = createApi({
 				method: 'POST',
 				body: newPost,
 			}),
-			invalidatesTags: [{ type: 'Posts', id: 'LIST' }],
+			invalidatesTags: ['Posts'],
 		}),
 		deletePost: builder.mutation({
 			query: id => ({
 				url: `posts/${id}`,
 				method: 'DELETE',
 			}),
-			invalidatesTags: [{ type: 'Posts', id: 'LIST' }],
+			invalidatesTags: ['Posts'],
 		}),
 		ProductsGet: builder.query({
 			query: ({ page = 1, search = '', category = '' }) =>
 				`/shop/products/?limit=12&page=${page}&category_id=${category}&search=${search}`,
+			providesTags: ['Posts'],
 		}),
 		addLogin: builder.mutation({
 			query: fullPhone => ({
@@ -82,13 +84,15 @@ export const api = createApi({
 		}),
 		ProductsDetail: builder.query({
 			query: id => `/shop/product-details/?product_id=${id}`,
+			providesTags: ['Posts'],
 		}),
 		Categoriyes: builder.query({
 			query: () => `/shop/categories`,
+			providesTags: ['Posts'],
 		}),
 		getMe: builder.query({
 			query: () => `/users/profile/`,
-			providesTags: ['User'],
+			providesTags: ['Posts'],
 		}),
 		updateUser: builder.mutation({
 			query: updatedData => ({
@@ -96,11 +100,11 @@ export const api = createApi({
 				method: 'PUT',
 				body: updatedData,
 			}),
-			invalidatesTags: ['User'],
+			invalidatesTags: ['Posts'],
 		}),
 		getCardProducts: builder.query({
 			query: () => `/shop/get-cart-products/`,
-			providesTags: ['Posts', 'Post'],
+			providesTags: ['Posts'],
 		}),
 		deleteQuantity: builder.mutation({
 			query: addQuant => ({
@@ -108,7 +112,7 @@ export const api = createApi({
 				method: 'POST',
 				body: addQuant,
 			}),
-			invalidatesTags: ['Posts', 'Post'],
+			invalidatesTags: ['Posts'],
 		}),
 		addQuantity: builder.mutation({
 			query: addQuant => ({
@@ -116,7 +120,7 @@ export const api = createApi({
 				method: 'POST',
 				body: addQuant,
 			}),
-			invalidatesTags: ['Posts', 'Post'],
+			invalidatesTags: ['Posts'],
 		}),
 		SuccessOrder: builder.mutation({
 			query: addQuant => ({
@@ -124,11 +128,11 @@ export const api = createApi({
 				method: 'POST',
 				body: addQuant,
 			}),
-			invalidatesTags: ['Posts', 'Post'],
+			invalidatesTags: ['Posts'],
 		}),
 		MyOrder: builder.query({
 			query: () => `/shop/order-history/`,
-			providesTags: ['Posts', 'Post'],
+			providesTags: ['Posts'],
 		}),
 		ClickLink: builder.mutation({
 			query: order_id => ({
@@ -136,7 +140,7 @@ export const api = createApi({
 				method: 'POST',
 				body: order_id,
 			}),
-			invalidatesTags: ['Posts', 'Post'],
+			invalidatesTags: ['Posts'],
 		}),
 		AddComment: builder.mutation({
 			query: formdata => ({
@@ -144,11 +148,11 @@ export const api = createApi({
 				method: 'POST',
 				body: formdata,
 			}),
-			invalidatesTags: ['Posts', 'Post'],
+			invalidatesTags: ['Posts'],
 		}),
 		GetComment: builder.query({
 			query: id => `/shop/product-comments/${id}/`,
-			providesTags: ['Posts', 'Post'],
+			providesTags: ['Posts'],
 		}),
 	}),
 })

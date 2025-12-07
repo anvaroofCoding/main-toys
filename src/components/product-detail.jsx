@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
-import { useProductsDetailQuery } from '@/service/api'
+import { useGetCardProductsQuery, useProductsDetailQuery } from '@/service/api'
 import { Skeleton } from 'antd'
-import { Star } from 'lucide-react'
+import { ShoppingBagIcon, Star } from 'lucide-react'
 import { useState } from 'react'
 import ImageCarousel from './image-carousel'
 import QuantityControl from './quantity-control'
@@ -9,6 +9,7 @@ import QuantityControl from './quantity-control'
 export default function ProductDetail({ id }) {
 	const [quantity, setQuantity] = useState(1)
 	const { data: product, isLoading } = useProductsDetailQuery(id)
+	const { data, isLoading: money } = useGetCardProductsQuery()
 
 	const handleQuantityChange = newQuantity => {
 		if (newQuantity > 0) {
@@ -17,7 +18,7 @@ export default function ProductDetail({ id }) {
 		}
 	}
 
-	if (isLoading) {
+	if (isLoading || money) {
 		return (
 			<div className='w-full'>
 				<div className='px-4 py-8 md:px-8'>
@@ -78,7 +79,7 @@ export default function ProductDetail({ id }) {
 							<Star className='w-4 h-4 fill-yellow-400 text-yellow-400' />
 							<span className='font-semibold'>{product.average_rating}</span>
 							<span className='text-sm text-muted-foreground'>
-								({product.sold_count} sold)
+								({product.sold_count} ta sotilgan)
 							</span>
 						</div>
 					</div>
@@ -91,7 +92,8 @@ export default function ProductDetail({ id }) {
 					{/* Price Section */}
 					<div className='flex items-baseline gap-3'>
 						<span className='text-3xl md:text-4xl font-bold text-primary'>
-							${product.discounted_price}
+							{new Intl.NumberFormat('uz-UZ').format(product.discounted_price)}{' '}
+							so'm
 						</span>
 						{product.discount > 0 && (
 							<>
@@ -106,22 +108,20 @@ export default function ProductDetail({ id }) {
 					</div>
 
 					{/* Description */}
-					<p className='text-muted-foreground text-lg leading-relaxed'>
+					<p className='text-muted-foreground text-sm leading-relaxed'>
 						{product.description}
 					</p>
 
 					{/* Stock Status */}
 					<div className='py-4 border-t border-b border-border'>
 						<p className='text-sm'>
-							<span className='font-semibold'>Stock Available: </span>
+							<span className='font-semibold'>Ombordagi soni: </span>
 							<span
 								className={
 									product.quantity > 0 ? 'text-green-600' : 'text-red-600'
 								}
 							>
-								{product.quantity > 0
-									? `${product.quantity} units`
-									: 'Out of stock'}
+								{product.quantity > 0 ? `${product.quantity} ta` : 'Qolmagan'}
 							</span>
 						</p>
 					</div>
@@ -130,36 +130,40 @@ export default function ProductDetail({ id }) {
 					<div className='flex flex-col gap-4'>
 						<div>
 							<label className='text-sm font-semibold block mb-2'>
-								Quantity
+								Buyurtmangiz soni
 							</label>
 							<QuantityControl
+								id={id}
 								quantity={quantity}
 								onQuantityChange={handleQuantityChange}
 								maxQuantity={product.quantity}
+								data={data}
 							/>
 						</div>
 
 						{/* Add to Cart Button */}
-						<Button
-							size='lg'
-							className='w-full'
-							disabled={product.quantity === 0}
-						>
-							Add to Cart
-						</Button>
+						<div className='text-white'>
+							<Button
+								size='lg'
+								className='w-full text-white'
+								disabled={product.quantity === 0}
+							>
+								Savatchaga qo'shish <ShoppingBagIcon />
+							</Button>
+						</div>
 
 						{/* Additional Info */}
 						<div className='grid grid-cols-2 gap-4 text-sm'>
 							<div className='border border-border rounded-lg p-4 text-center'>
-								<p className='font-semibold'>Fast Shipping</p>
+								<p className='font-semibold'>Tez xarid qiling</p>
 								<p className='text-muted-foreground text-xs'>
-									Quick delivery available
+									Tez yetkazib berish mumkin
 								</p>
 							</div>
 							<div className='border border-border rounded-lg p-4 text-center'>
-								<p className='font-semibold'>Secure Payment</p>
+								<p className='font-semibold'>Xavfsiz to'lov</p>
 								<p className='text-muted-foreground text-xs'>
-									100% safe transactions
+									100% xavfsiz tranzaksiyalar
 								</p>
 							</div>
 						</div>
