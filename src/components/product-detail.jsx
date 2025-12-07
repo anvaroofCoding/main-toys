@@ -1,7 +1,11 @@
 import { Button } from '@/components/ui/button'
-import { useGetCardProductsQuery, useProductsDetailQuery } from '@/service/api'
+import {
+	useAddQuantityMutation,
+	useGetCardProductsQuery,
+	useProductsDetailQuery,
+} from '@/service/api'
 import { Skeleton } from 'antd'
-import { ArrowLeft, ShoppingBagIcon, Star } from 'lucide-react'
+import { ArrowLeft, Loader2, ShoppingBagIcon, Star } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import ImageCarousel from './image-carousel'
@@ -12,6 +16,7 @@ export default function ProductDetail({ id }) {
 	const [quantity, setQuantity] = useState(1)
 	const { data: product, isLoading } = useProductsDetailQuery(id)
 	const { data, isLoading: money } = useGetCardProductsQuery()
+	const [addQuantity, { isLoading: loadingAdd }] = useAddQuantityMutation()
 
 	const handleQuantityChange = newQuantity => {
 		if (newQuantity > 0) {
@@ -22,7 +27,10 @@ export default function ProductDetail({ id }) {
 	const findedElements = data?.find(items => {
 		return items?.product_id == product?.id
 	})
-	console.log(findedElements)
+
+	const handleAddProduct = async () => {
+		await addQuantity({ product_id: id, quantity: 1 }).unwrap()
+	}
 
 	if (isLoading || money) {
 		return (
@@ -72,7 +80,7 @@ export default function ProductDetail({ id }) {
 				{/* Image Gallery */}
 				<div className='flex flex-col gap-4 relative'>
 					<div className='absolute z-10 mt-2 text-white ml-2'>
-						<Button className={'bg-blue-600/60 '}>
+						<Button className='bg-blue-600/60' onClick={() => navigate(-1)}>
 							<ArrowLeft />
 						</Button>
 					</div>
@@ -168,9 +176,20 @@ export default function ProductDetail({ id }) {
 								<Button
 									size='lg'
 									className='w-full text-white'
-									disabled={product.quantity === 0}
+									disabled={product.quantity === 0 || loadingAdd}
+									onClick={handleAddProduct}
 								>
-									Savatchaga qo'shish <ShoppingBagIcon />
+									{loadingAdd ? (
+										<span className='flex items-center gap-2'>
+											Qo'shilmoqda...
+											<Loader2 className='animate-spin w-5 h-5' />
+										</span>
+									) : (
+										<span className='flex items-center gap-2'>
+											Savatchaga qo'shish
+											<ShoppingBagIcon className='w-5 h-5' />
+										</span>
+									)}
 								</Button>
 							)}
 						</div>

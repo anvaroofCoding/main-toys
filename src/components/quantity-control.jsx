@@ -24,7 +24,7 @@ export default function QuantityControl({
 	const [confirmOpen, setConfirmOpen] = useState(false)
 	const [typingTimeout, setTypingTimeout] = useState(null)
 	const [value, setValue] = useState(0)
-	const [filterData, setFilterData] = useState('')
+	const [filterData, setFilterData] = useState(0)
 	const [minusLoad, setMinusLoad] = useState(null)
 	const [plusLoad, setplusLoad] = useState(null)
 
@@ -62,7 +62,10 @@ export default function QuantityControl({
 
 	const handleConfirm = async () => {
 		onQuantityChange(pendingValue)
-		await editCard({ cart_id: filteredData?.id, quantity: pendingValue })
+		await editCard({
+			cart_id: filteredData?.id,
+			quantity: pendingValue,
+		}).unwrap()
 		setInputValue(String(pendingValue))
 		setConfirmOpen(false)
 		setPendingValue(null)
@@ -75,17 +78,16 @@ export default function QuantityControl({
 	}
 
 	const handleDecrease = async () => {
-		await addQuantity({ product_id: id, quantity: -1 })
+		await addQuantity({ product_id: id, quantity: -1 }).unwrap()
 	}
 
 	const handleIncrease = async () => {
-		if (filteredData?.quantity > maxQuantity) {
+		if (filteredData?.quantity >= maxQuantity) {
 			toast.warning('Omborda boshqa qolmadi!')
 		} else {
 			await addQuantity({ product_id: id, quantity: 1 })
 		}
 	}
-
 	return (
 		<>
 			<div className='flex items-center gap-2'>
@@ -93,7 +95,7 @@ export default function QuantityControl({
 					variant='outline'
 					size='icon'
 					onClick={handleDecrease}
-					disabled={data?.quantity <= 1}
+					disabled={filteredData ? false : true}
 				>
 					{isLoading ? (
 						<Loader className='w-4 h-4 ' />
@@ -104,14 +106,18 @@ export default function QuantityControl({
 
 				<Input
 					type='number'
-					value={filterData ? filterData : 1}
+					value={filterData}
+					disabled={filteredData ? false : true}
 					onChange={e => {
 						setFilterData(e.target.value)
 						setValue(e.target.value)
 					}}
 					min='1'
 					max={maxQuantity}
-					className='w-16 text-center border-1 border-gray-200'
+					className='w-16 text-center border border-gray-200 
+	           [&::-webkit-inner-spin-button]:appearance-none 
+	           [&::-webkit-outer-spin-button]:appearance-none 
+	           [&::-moz-inner-spin-button]:appearance-none'
 					inputMode='numeric' // faqat raqamli klaviatura
 					pattern='[0-9]*' // sonlarni kiritishga majbur qiladi
 				/>
