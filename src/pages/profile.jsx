@@ -50,10 +50,10 @@ const Profile = () => {
 	const handleSave = async () => {
 		try {
 			await updateUser(formData).unwrap()
-			toast.success('Ma’lumotlar yangilandi ✅')
+			toast.success('Ma’lumotlar yangilandi')
 			setIsEditing(false)
 		} catch (err) {
-			toast.error('Xatolik yuz berdi ❌')
+			toast.error('Xatolik yuz berdi')
 			console.error(err)
 		}
 	}
@@ -117,7 +117,7 @@ const Profile = () => {
 					</h2>
 
 					<div className='flex items-center gap-1 mt-1 bg-white/20 px-3 py-1 rounded-full backdrop-blur-md border border-white/30 shadow-md'>
-						<span className='text-xs font-light'>Verified Account</span>
+						<span className='text-xs font-light'>Tastiqlangan hisob</span>
 						<div className='w-4 h-4 bg-green-400 rounded-full flex items-center justify-center shadow'>
 							<Check className='w-3 h-3 text-white' />
 						</div>
@@ -192,7 +192,7 @@ const Profile = () => {
 								value={userData?.address}
 							/>
 
-							<div className='pt-4 flex flex-col gap-3'>
+							<div className='pt-4 flex flex-col gap-3 text-white'>
 								<button
 									onClick={() => setIsEditing(true)}
 									className='flex items-center justify-start gap-3 bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-2xl text-sm font-medium shadow-lg transition-all active:scale-[.97]'
