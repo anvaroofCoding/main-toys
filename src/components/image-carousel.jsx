@@ -138,8 +138,8 @@ export default function ImageCarousel({ images, productName }) {
 						>
 							<img
 								src={image || '/placeholder.svg'}
-								alt={`Thumbnail ${index + 1}`}
-								className='w-full h-full object-cover'
+								alt={productName}
+								className='w-full h-full object-cover rounded-lg'
 							/>
 						</button>
 					))}
