@@ -9,7 +9,7 @@ const ProductSkeleton = () => {
 			<div className='p-3'>
 				<Skeleton active title={false} paragraph={{ rows: 2 }} />
 				<div className='mt-3 flex items-center justify-between'>
-					<Skeleton.Input active style={{ width: 80 }} />
+					<Skeleton.Button active style={{ width: 130 }} />
 					<Skeleton.Button active shape='circle' size='middle' />
 				</div>
 			</div>
