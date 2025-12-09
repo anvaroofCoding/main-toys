@@ -7,10 +7,6 @@ import { Link } from 'react-router-dom'
 import Header from '../components/header'
 
 const Home = () => {
-
-		
-
-
 	const token = localStorage.getItem('access_token')
 	return (
 		<div className=''>

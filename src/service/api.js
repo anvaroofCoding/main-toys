@@ -39,7 +39,7 @@ const baseQueryWithAuth = async (args, api, extraOptions) => {
 		alert(
 			'Buyurtma berish uchun telefon raqamingiz orqali shaxsiy kabinetga kirib oling!'
 		)
-		window.location.href = '/shaxsiy-kabinet'
+		window.location.href = '/login'
 	}
 
 	return result

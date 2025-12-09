@@ -74,9 +74,10 @@ const Checkout = () => {
 				product_items: cart.map(item => ({
 					product_id: item.product_id,
 					quantity: item.quantity,
-					color: item.color,
 				})),
 			}
+
+			console.log(orderPayload)
 
 			const res = await createOrder(orderPayload).unwrap()
 			navigate('/buyurtmalar')

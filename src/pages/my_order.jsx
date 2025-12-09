@@ -18,7 +18,6 @@ import { toast } from 'sonner'
 const MyOrder = () => {
 	const { data = [], isLoading } = useMyOrderQuery()
 	const [ClickLink, { isLoading: loads }] = useClickLinkMutation()
-	console.log(data)
 
 	if (isLoading) {
 		return (
@@ -60,6 +59,8 @@ const MyOrder = () => {
 			</div>
 		)
 	}
+
+	console.log(data)
 
 	const getStatusConfig = status => {
 		switch (status) {
@@ -230,12 +231,7 @@ const MyOrder = () => {
 														<p className='text-sm font-medium text-foreground mb-1 line-clamp-2'>
 															{item.product_name}
 														</p>
-														<p className='text-xs text-muted-foreground'>
-															Rangi:{' '}
-															<span className='font-medium'>
-																{item.color || '—'}
-															</span>
-														</p>
+
 														<div className='text-right shrink-0'>
 															<p className='text-sm font-semibold text-foreground whitespace-nowrap'>
 																{Number(item.total_price).toLocaleString(

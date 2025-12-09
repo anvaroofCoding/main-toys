@@ -1,5 +1,5 @@
 import { useCategoriyesQuery } from '@/service/api'
-import { Loader2, Package, Shapes } from 'lucide-react'
+import { Loader2, Shapes } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 const Category = () => {
@@ -30,6 +30,7 @@ const Category = () => {
 		)
 	}
 
+	console.log(data)
 	return (
 		<div className='py-10 pb-20 xl:container mx-auto px-2'>
 			<h2 className='text-2xl md:text-3xl font-bold text-center mb-6 flex items-center justify-center gap-2 text-blue-600'>
@@ -45,7 +46,12 @@ const Category = () => {
 						className='group bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition duration-200 p-4 flex flex-col items-center justify-center text-center hover:bg-blue-50 cursor-pointer'
 					>
 						<div className='bg-blue-100 text-blue-600 p-3 rounded-full mb-3 group-hover:bg-blue-500 group-hover:text-white transition'>
-							<Package className='w-6 h-6' />
+							{/* <Package className='w-6 h-6' /> */}
+							<img
+								src={items?.image}
+								alt=''
+								className='w-12 h-12 rounded-full'
+							/>
 						</div>
 
 						<h3 className='text-sm md:text-base font-semibold text-gray-800 group-hover:text-blue-600 transition line-clamp-2'>

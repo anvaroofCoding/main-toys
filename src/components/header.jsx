@@ -96,14 +96,14 @@ export default function Header() {
 					))}
 				</h1>
 
-				<p
+				{/* <p
 					className={`text-lg sm:text-xl md:text-2xl text-gray-200 font-semibold mb-3 transition-all duration-1000 ${
 						isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
 					}`}
 					style={{ transitionDelay: '300ms' }}
 				>
 					Eng so‘nggi o‘yinchoqlar — ulgurji narxlarda!
-				</p>
+				</p> */}
 
 				<p
 					className={`max-w-xl md:max-w-2xl text-sm sm:text-base md:text-lg text-gray-200 transition-all duration-1000 ${

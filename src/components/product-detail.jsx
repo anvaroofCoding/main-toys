@@ -199,7 +199,7 @@ export default function ProductDetail({ id }) {
 							<div className='border border-border rounded-lg p-4 text-center'>
 								<p className='font-semibold'>Tez xarid qiling</p>
 								<p className='text-muted-foreground text-xs'>
-									Tez yetkazib berish mumkin
+									24 soat ichida yetkazib berish
 								</p>
 							</div>
 							<div className='border border-border rounded-lg p-4 text-center'>

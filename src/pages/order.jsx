@@ -2,13 +2,21 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
+import {
+	Dialog,
+	DialogContent,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from '@/components/ui/dialog'
 import { Separator } from '@/components/ui/separator'
 import {
 	useAddQuantityMutation,
 	useDeleteQuantityMutation,
 	useGetCardProductsQuery,
+	useUpdateCardMutation,
 } from '@/service/api'
-import { Image } from 'antd'
+import { Image, Input } from 'antd'
 import {
 	ArrowRight,
 	Loader,
@@ -19,18 +27,200 @@ import {
 	ShoppingCart,
 	Trash2,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 
 export default function Order() {
 	const { data = [], isLoading, refetch } = useGetCardProductsQuery()
 	const [addQuantity] = useAddQuantityMutation()
-	const [deleteQuantity, { isLoading: isDeleting }] =
-		useDeleteQuantityMutation()
+	const [deleteQuantity, { isDeleting }] = useDeleteQuantityMutation()
 	const [selected, setSelected] = useState([])
 	const [loadingId, setLoadingId] = useState(null)
 	const navigate = useNavigate()
+
+	const [localQuantity, setLocalQuantity] = useState({})
+	const [pendingUpdates, setPendingUpdates] = useState({})
+	const timerRef = useRef({})
+
+	const [confirmDialog, setConfirmDialog] = useState({
+		open: false,
+		itemId: null,
+		newQuantity: null,
+		type: 'confirm', // 'confirm' or 'exceed'
+		sklad: null,
+	})
+
+	const [editCard] = useUpdateCardMutation()
+
+	useEffect(() => {
+		const newLocalQuantity = {}
+		data.forEach(item => {
+			// Only set if we haven't already got a local value
+			if (localQuantity[item.id] === undefined) {
+				newLocalQuantity[item.id] = item.quantity
+			}
+		})
+		if (Object.keys(newLocalQuantity).length > 0) {
+			setLocalQuantity(prev => ({ ...prev, ...newLocalQuantity }))
+		}
+	}, [data])
+
+	const scheduleQuantityUpdate = (item, newQuantity) => {
+		// Validate input
+		if (newQuantity === '' || newQuantity === null) return
+
+		const qty = Number(newQuantity)
+		if (qty < 1) {
+			setLocalQuantity(prev => ({ ...prev, [item.id]: item.quantity }))
+			return
+		}
+
+		// Check stock limit
+		if (qty > item.sklad_quantity) {
+			setConfirmDialog({
+				open: true,
+				itemId: item.id,
+				newQuantity: qty,
+				type: 'exceed',
+				sklad: item.sklad_quantity,
+			})
+			return
+		}
+
+		// Clear existing timer
+		if (timerRef.current[item.id]) {
+			clearTimeout(timerRef.current[item.id])
+		}
+
+		// Set pending update indicator
+		setPendingUpdates(prev => ({ ...prev, [item.id]: true }))
+
+		// Schedule API call after 1 second of inactivity
+		timerRef.current[item.id] = setTimeout(async () => {
+			try {
+				await editCard({
+					cart_id: item.id,
+					quantity: qty,
+				}).unwrap()
+				refetch()
+				setPendingUpdates(prev => ({ ...prev, [item.id]: false }))
+				toast.success('Savat yangilandi')
+			} catch (err) {
+				console.error('Xatolik:', err)
+				// Revert to original quantity on error
+				setLocalQuantity(prev => ({ ...prev, [item.id]: item.quantity }))
+				setPendingUpdates(prev => ({ ...prev, [item.id]: false }))
+				toast.error('Savat yangilanmadi')
+			}
+		}, 1000)
+	}
+
+	const handleQuantityChange = (item, value) => {
+		// Allow empty string while typing
+		if (value === '') {
+			setLocalQuantity(prev => ({ ...prev, [item.id]: '' }))
+			return
+		}
+
+		const qty = Number(value)
+
+		// Only allow positive numbers
+		if (isNaN(qty) || qty < 0) return
+
+		// Update local state immediately for UI responsiveness
+		setLocalQuantity(prev => ({ ...prev, [item.id]: qty }))
+
+		// Schedule the API update
+		scheduleQuantityUpdate(item, qty)
+	}
+
+	const handleIncrease = async item => {
+		const currentQty = Number(localQuantity[item.id] ?? item.quantity)
+		if (currentQty >= item.sklad_quantity) {
+			toast.warning(`Omborda ${item.sklad_quantity} dona qolgan`)
+			return
+		}
+		handleQuantityChange(item, currentQty + 1)
+	}
+
+	const handleDecrease = async item => {
+		const currentQty = Number(localQuantity[item.id] ?? item.quantity)
+		if (currentQty > 1) {
+			handleQuantityChange(item, currentQty - 1)
+		}
+	}
+
+	const handleConfirmDialog = async () => {
+		const { itemId, newQuantity, type } = confirmDialog
+		const item = data.find(d => d.id === itemId)
+
+		if (!item) return
+
+		if (type === 'exceed') {
+			// Set to max available
+			setLocalQuantity(prev => ({ ...prev, [itemId]: item.sklad_quantity }))
+			scheduleQuantityUpdate(item, item.sklad_quantity)
+		}
+		setConfirmDialog({
+			open: false,
+			itemId: null,
+			newQuantity: null,
+			type: 'confirm',
+		})
+	}
+
+	const handleDeleteOne = async item => {
+		try {
+			await deleteQuantity([{ product_id: item.product_id }]).unwrap()
+			refetch()
+			setLocalQuantity(prev => {
+				const updated = { ...prev }
+				delete updated[item.id]
+				return updated
+			})
+		} catch (err) {
+			console.error("O'chirishda xatolik:", err)
+		}
+	}
+
+	const toggleSelect = id => {
+		setSelected(prev =>
+			prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+		)
+	}
+
+	const handleDeleteSelected = async () => {
+		try {
+			const itemsToDelete = data
+				.filter(item => selected.includes(item.product_id))
+				.map(item => ({
+					product_id: item.product_id,
+				}))
+
+			if (itemsToDelete.length === 0) {
+				alert('Hech narsa tanlanmagan!')
+				return
+			}
+			await deleteQuantity(itemsToDelete).unwrap()
+			refetch()
+			setSelected([])
+			setLocalQuantity({})
+		} catch (err) {
+			console.error("O'chirishda xatolik:", err)
+		}
+	}
+
+	const total = data.reduce(
+		(sum, item) =>
+			sum +
+			(item.discounted_price
+				? item.discounted_price * item.quantity
+				: item.price * item.quantity),
+		0
+	)
+
+	const handleOrder = () => navigate('/checkout')
 
 	// Loader
 	if (isLoading) {
@@ -76,106 +266,6 @@ export default function Order() {
 		)
 	}
 
-	// Qo'shish
-	const handleIncrease = async item => {
-		setLoadingId(item.id)
-		try {
-			if (item.quantity == item.sklad_quantity) {
-				toast.warning(`Omborda ${item.sklad_quantity} dona qolgan`)
-			} else {
-				await addQuantity({
-					product_id: item.product_id,
-					color: item.color,
-					quantity: 1,
-				}).unwrap()
-				refetch()
-			}
-		} catch (err) {
-			console.error('Oshirishda xatolik:', err)
-		} finally {
-			setLoadingId(null)
-		}
-	}
-
-	// Kamaytirish
-	const handleDecrease = async item => {
-		setLoadingId(item.id)
-		try {
-			if (item.quantity === 1) {
-				await deleteQuantity([
-					{ product_id: item.product_id, color: item.color },
-				]).unwrap()
-				window.location.reload()
-			} else {
-				await addQuantity({
-					product_id: item.product_id,
-					color: item.color,
-					quantity: -1,
-				}).unwrap()
-			}
-			refetch()
-		} catch (err) {
-			console.error('Kamaytirishda xatolik:', err)
-		} finally {
-			setLoadingId(null)
-		}
-	}
-
-	// 1 mahsulotni o'chirish
-	const handleDeleteOne = async item => {
-		try {
-			await deleteQuantity([
-				{ product_id: item.product_id, color: item.color },
-			]).unwrap()
-			refetch()
-			window.location.reload()
-		} catch (err) {
-			console.error("O'chirishda xatolik:", err)
-		}
-	}
-
-	// Tanlash
-	const toggleSelect = id => {
-		setSelected(prev =>
-			prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
-		)
-	}
-
-	// Belgilanganlarni o'chirish
-	const handleDeleteSelected = async () => {
-		try {
-			const itemsToDelete = data
-				.filter(item => selected.includes(item.product_id))
-				.map(item => ({
-					product_id: item.product_id,
-					color: item.color,
-				}))
-
-			if (itemsToDelete.length === 0) {
-				alert('Hech narsa tanlanmagan!')
-				return
-			}
-			await deleteQuantity(itemsToDelete).unwrap()
-			refetch()
-			window.location.reload()
-			setSelected([])
-		} catch (err) {
-			console.error("O'chirishda xatolik:", err)
-		}
-	}
-
-	// Jami summa
-	const total = data.reduce(
-		(sum, item) =>
-			sum +
-			(item.discounted_price
-				? item.discounted_price * item.quantity
-				: item.price * item.quantity),
-		0
-	)
-
-	const handleOrder = () => navigate('/checkout')
-
 	return (
 		<div className='min-h-screen bg-background pb-10'>
 			{/* Header */}
@@ -203,8 +293,50 @@ export default function Order() {
 					</div>
 				</div>
 			</div>
+
 			{/* Main Content */}
 			<div className='mx-auto max-w-4xl px-4 py-6 sm:px-6'>
+				<Dialog
+					open={confirmDialog.open}
+					onOpenChange={open =>
+						!open && setConfirmDialog({ ...confirmDialog, open: false })
+					}
+					aria-describedby={undefined}
+				>
+					<DialogContent aria-describedby={undefined}>
+						<DialogHeader>
+							<DialogTitle>
+								{confirmDialog.type === 'exceed'
+									? `Maksimum ${confirmDialog.sklad} ta mavjud`
+									: 'Miqdorni tasdiqlang'}
+							</DialogTitle>
+							<p className='text-sm text-muted-foreground'>
+								{confirmDialog.type === 'exceed'
+									? `Kiritgan miqdor ${confirmDialog.sklad} tadan ko'p. Maksimum miqdorni o'rnatish kerakmi?`
+									: "Savatchadagi miqdor o'zgartiriladi."}
+							</p>
+						</DialogHeader>
+						<DialogFooter className='mt-4 flex flex-row items-center justify-center'>
+							<Button
+								variant='outline'
+								onClick={() =>
+									setConfirmDialog({
+										open: false,
+										itemId: null,
+										newQuantity: null,
+										type: 'confirm',
+									})
+								}
+							>
+								Bekor qilish
+							</Button>
+							<div className='text-white'>
+								<Button onClick={handleConfirmDialog}>Tasdiqlash</Button>
+							</div>
+						</DialogFooter>
+					</DialogContent>
+				</Dialog>
+
 				<div className='space-y-3 py-5'>
 					{data.map(item => (
 						<Card
@@ -258,28 +390,43 @@ export default function Order() {
 												size='icon'
 												variant='ghost'
 												onClick={() => handleDecrease(item)}
-												disabled={loadingId === item.id}
+												disabled={
+													loadingId === item.id || pendingUpdates[item.id]
+												}
 												className='h-8 w-8 rounded-full hover:bg-background'
 											>
-												{loadingId === item.id ? (
+												{pendingUpdates[item.id] ? (
 													<Loader2 className='h-4 w-4 animate-spin text-muted-foreground' />
 												) : (
 													<Minus className='h-4 w-4' />
 												)}
 											</Button>
 
-											<span className='min-w-[2rem] text-center text-sm font-medium'>
-												{item.quantity}
-											</span>
+											<Input
+												type='number'
+												value={localQuantity[item.id] ?? item.quantity}
+												onChange={e =>
+													handleQuantityChange(item, e.target.value)
+												}
+												className='w-16 text-center border border-gray-200 
+													[&::-webkit-inner-spin-button]:appearance-none 
+													[&::-webkit-outer-spin-button]:appearance-none 
+													[&::-moz-inner-spin-button]:appearance-none'
+												inputMode='numeric'
+												min='1'
+												max={item.sklad_quantity}
+											/>
 
 											<Button
 												size='icon'
 												variant='ghost'
 												onClick={() => handleIncrease(item)}
-												disabled={loadingId === item.id}
+												disabled={
+													loadingId === item.id || pendingUpdates[item.id]
+												}
 												className='h-8 w-8 rounded-full hover:bg-background'
 											>
-												{loadingId === item.id ? (
+												{pendingUpdates[item.id] ? (
 													<Loader2 className='h-4 w-4 animate-spin text-muted-foreground' />
 												) : (
 													<Plus className='h-4 w-4' />
@@ -337,7 +484,7 @@ export default function Order() {
 										) : (
 											<Trash2 className='mr-2 h-4 w-4' />
 										)}
-										Tanlanganlarni o‘chirish
+										Tanlanganlarni o'chirish
 									</Button>
 
 									<div className='flex-1 text-white'>

@@ -1,4 +1,44 @@
-import { Instagram, MapPin, Phone, Send, Youtube } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Instagram, Send, Youtube } from 'lucide-react'
+import { useEffect, useState } from 'react'
+
+const MarsToysLogo = () => {
+	const [isVisible, setIsVisible] = useState(false)
+
+	useEffect(() => {
+		setIsVisible(true)
+	}, [])
+
+	const marsToysLetters = [
+		{ letter: 'M', color: 'text-blue-500' },
+		{ letter: 'A', color: 'text-red-500' },
+		{ letter: 'R', color: 'text-yellow-500' },
+		{ letter: 'S', color: 'text-green-500' },
+		{ letter: ' ', color: '' },
+		{ letter: 'T', color: 'text-blue-500' },
+		{ letter: 'O', color: 'text-red-500' },
+		{ letter: 'Y', color: 'text-yellow-500' },
+		{ letter: 'S', color: 'text-green-500' },
+	]
+
+	return (
+		<h2 className='text-3xl sm:text-4xl md:text-5xl font-bold tracking-wider'>
+			{marsToysLetters.map((item, index) => (
+				<span
+					key={index}
+					className={`inline-block ${item.color} transition-all duration-1000 ${
+						isVisible
+							? 'translate-y-0 opacity-100 scale-100'
+							: 'translate-y-20 opacity-0 scale-75'
+					}`}
+					style={{ transitionDelay: `${index * 100}ms` }}
+				>
+					{item.letter}
+				</span>
+			))}
+		</h2>
+	)
+}
 
 const Footer = () => {
 	const socialLinks = [
@@ -6,81 +46,80 @@ const Footer = () => {
 			icon: Instagram,
 			href: 'https://www.instagram.com/marstoys01/',
 			label: 'Instagram',
-			color: 'hover:text-pink-500',
 		},
 		{
 			icon: Youtube,
 			href: 'https://www.youtube.com/channel/UCeBGmOrSWLpHz3ROCwlh8qA',
 			label: 'YouTube',
-			color: 'hover:text-red-500',
 		},
 		{
 			icon: Send,
 			href: 'https://t.me/sardorigrushki',
 			label: 'Telegram',
-			color: 'hover:text-sky-500',
 		},
 	]
 
 	return (
-		<footer className='bg-gradient-to-b py-10 lg:pb-0 pb-20 from-blue-500 via-blue-500 to-blue-500 text-white px-6 md:px-10 border-t border-white/10 rounded-t-3xl'>
-			<div className='max-w-6xl mx-auto flex flex-col items-center text-center gap-8'>
-				{/* Contact Info */}
-				<div className='space-y-3'>
-					<div className='flex items-center justify-center gap-2 text-sm md:text-base opacity-90'>
-						<MapPin size={18} />
-						<span>O‘rikzor bozori, Gilam bozor / Samarbonu 39A/1</span>
+		<footer className='bg-slate-900 pb-15 text-white border-t border-slate-800'>
+			{/* Main Footer Content */}
+			<div className='max-w-6xl mx-auto px-6 md:px-10 py-12 md:py-20'>
+				{/* Logo and Description */}
+				<div className='mb-12 md:mb-16'>
+					<MarsToysLogo />
+					<p className='text-slate-400 text-sm mt-6 leading-relaxed max-w-sm'>
+						Xafsiz va teskor o'yinchoqlar dunyosiga xush kelibsiz! Mars Toys
+						sizning ishonchli hamkoringiz bo'lib, sifatli o'yinchoqlarni taqdim
+						etadi.
+					</p>
+				</div>
+
+				<div className='h-px bg-slate-800 mb-8 md:mb-12' />
+
+				{/* Social Links and Contact */}
+				<div className='flex flex-col md:flex-row items-start md:items-center justify-between gap-8'>
+					<div>
+						<p className='text-slate-400 text-sm mb-4'>
+							Bizning ijtimoiy tarmoqlarimiz
+						</p>
+						<div className='flex items-center gap-4'>
+							{socialLinks.map(social => {
+								const Icon = social.icon
+								return (
+									<Button
+										key={social.label}
+										variant='ghost'
+										size='icon'
+										className='text-slate-400 hover:text-white hover:bg-slate-800 transition-colors'
+										asChild
+									>
+										<a
+											href={social.href}
+											aria-label={social.label}
+											target='_blank'
+											rel='noopener noreferrer'
+										>
+											<Icon className='w-5 h-5' />
+										</a>
+									</Button>
+								)
+							})}
+						</div>
 					</div>
-					<div className='flex items-center justify-center gap-2 text-sm md:text-base opacity-90'>
-						<MapPin size={18} />
-						<span>Andijon • Jahon bozori</span>
-					</div>
-					<div className='flex gap-5'>
-						<a
-							href='tel:+998931374426'
-							className='flex items-center justify-center gap-2 text-sm md:text-base hover:text-green-400 transition-colors duration-200'
-						>
-							<Phone size={18} />
-							<span>+998 93 137 44 26</span>
-						</a>
+
+					<div className='text-left md:text-right'>
+						<p className='text-slate-400 text-sm mb-2'>Bog'lanish</p>
 						<a
 							href='tel:+998914872112'
-							className='flex items-center justify-center gap-2 text-sm md:text-base hover:text-green-400 transition-colors duration-200'
+							className='text-white hover:text-blue-400 transition-colors font-medium'
 						>
-							<Phone size={18} />
-							<span>+998 91 487 21 12</span>
+							+998 91 487 21 12
 						</a>
+						<p className='text-xs text-slate-500 pt-4'>
+							© {new Date().getFullYear()} Mars Toys. Barcha huquqlar
+							himoyalangan.
+						</p>
 					</div>
 				</div>
-
-				{/* Social Links */}
-				<div className='flex items-center justify-center gap-5 md:gap-6'>
-					{socialLinks.map((social, index) => {
-						const Icon = social.icon
-						return (
-							<a
-								key={index}
-								href={social.href}
-								aria-label={social.label}
-								target='_blank'
-								rel='noopener noreferrer'
-								className={`group relative p-3 md:p-3.5 rounded-full bg-white/10 backdrop-blur-md transition-all duration-300 hover:bg-white/20 hover:scale-110 ${social.color}`}
-							>
-								<Icon className='w-5 h-5 md:w-6 md:h-6 transition-transform duration-300 group-hover:rotate-6' />
-							</a>
-						)
-					})}
-				</div>
-
-				{/* Divider */}
-				<div className='w-20 h-[1px] bg-white/20 rounded-full' />
-
-				{/* Copyright */}
-				<p className='text-xs md:text-sm text-white/70 font-light tracking-wide'>
-					© {new Date().getFullYear()}{' '}
-					<span className='text-white font-medium'>Mars Toys</span> — Barcha
-					huquqlar himoyalangan.
-				</p>
 			</div>
 		</footer>
 	)
