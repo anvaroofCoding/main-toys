@@ -111,8 +111,9 @@ export default function Header() {
 					}`}
 					style={{ transitionDelay: '450ms' }}
 				>
-					Bugun buyurtma bering — ertaga do‘koningizda! MarsToys — savdogarlar
-					uchun qulay platforma.
+					Mars Toys — savdo uchun puxta tanlangan o‘yinchoqlar platformasi. Bu
+					yerda siz tasodifiy mahsulotlarni emas, balki doim sotiladigan,
+					qayta-qayta buyurtma berishga qulay o‘yinchoqlarni topasiz.
 				</p>
 
 				{/* Button */}

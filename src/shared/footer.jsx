@@ -67,9 +67,8 @@ const Footer = () => {
 				<div className='mb-12 md:mb-16'>
 					<MarsToysLogo />
 					<p className='text-slate-400 text-sm mt-6 leading-relaxed max-w-sm'>
-						Xafsiz va teskor o'yinchoqlar dunyosiga xush kelibsiz! Mars Toys
-						sizning ishonchli hamkoringiz bo'lib, sifatli o'yinchoqlarni taqdim
-						etadi.
+						Mars Toys — o‘yinchoqlar bo‘yicha ishonchli hamkor. Zamonaviy
+						assortiment, tezkor buyurtma va qulay shartlar.
 					</p>
 				</div>
 
